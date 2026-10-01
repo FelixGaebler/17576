@@ -1,5 +1,7 @@
 {
-  "name": "prisma-compute-nextjs",
+  "name": "twentysix-cubed",
+  "version": "0.1.0",
+  "description": "26³ – a gamified internal glossary for three-letter acronyms",
   "private": true,
   "license": "AGPL-3.0-only",
   "author": "Felix Gaebler <felix@gaebler.dev>",
@@ -19,7 +21,7 @@
     "db:migrate": "prisma db migrate",
     "db:seed": "tsx src/prisma/seed.ts",
     "compute:login": "prisma auth login",
-    "compute:database:create": "prisma postgres create prisma-compute-nextjs --branch main",
+    "compute:database:create": "prisma postgres create twentysix-cubed --branch main",
     "compute:connect": "prisma git connect",
     "compute:open": "prisma service open"
   },
@@ -33,8 +35,10 @@
     "cn": "^0.4.0",
     "dotenv": "17.4.2",
     "input-otp": "^1.5.0",
+    "jose": "6",
     "lucide-react": "^1.49.0",
     "next": "16.2.7",
+    "openid-client": "6",
     "postcss": "^8.5.28",
     "react": "19.2.4",
     "react-dom": "19.2.4",

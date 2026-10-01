@@ -1,0 +1,146 @@
+# Default values for twentysix-cubed.
+
+replicaCount: 1
+
+# Runtime image: the default target of the repository's Dockerfile.
+image:
+  repository: ghcr.io/felixgaebler/twentysix-cubed
+  pullPolicy: IfNotPresent
+  # Defaults to the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# The chart does not create a database. Create a Secret with the PostgreSQL
+# connection string before installing:
+#   kubectl create secret generic twentysix-cubed-db --from-literal=DATABASE_URL='postgresql://…'
+database:
+  existingSecret: twentysix-cubed-db
+  secretKey: DATABASE_URL
+
+# Sign-in via OpenID Connect (Keycloak, Entra ID, Okta, …). Client secret and
+# session secret come from an existing Secret:
+#   kubectl create secret generic twentysix-cubed-oidc \
+#     --from-literal=OIDC_CLIENT_SECRET='…' --from-literal=SESSION_SECRET="$(openssl rand -base64 32)"
+oidc:
+  enabled: false
+  issuer: https://keycloak.example.com/realms/company
+  clientId: twentysix-cubed
+  scopes: openid profile email
+  # Public URL of the app; the redirect URI is <appUrl>/auth/callback.
+  appUrl: https://acronyms.example.com
+  existingSecret: twentysix-cubed-oidc
+  clientSecretKey: OIDC_CLIENT_SECRET
+  sessionSecretKey: SESSION_SECRET
+
+# Without OIDC everybody shares one development user. Only for demos.
+devUser:
+  enabled: false
+
+# Runs `prisma db migrate` as a Helm hook before every install and upgrade.
+migrations:
+  enabled: true
+  # Build with `docker build --target migrate`.
+  image:
+    repository: ghcr.io/felixgaebler/twentysix-cubed-migrate
+    # Defaults to the chart appVersion.
+    tag: ""
+  backoffLimit: 1
+  resources: {}
+
+# Port of the Next.js standalone server inside the container.
+containerPort: 3000
+
+# Additional environment variables for the app container.
+env: []
+
+serviceAccount:
+  create: true
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: acronyms.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: acronyms-tls
+  #    hosts:
+  #      - acronyms.example.com
+
+# Expose the service via a Gateway API HTTPRoute instead of an Ingress.
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    - name: gateway
+      sectionName: http
+  hostnames:
+    - acronyms.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+# Every page queries the database, so probe the port instead of an HTTP path.
+livenessProbe:
+  tcpSocket:
+    port: http
+readinessProbe:
+  tcpSocket:
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+# Next.js writes its cache here; needed because the root filesystem is read-only.
+volumes:
+  - name: next-cache
+    emptyDir: {}
+volumeMounts:
+  - name: next-cache
+    mountPath: /app/.next/cache
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

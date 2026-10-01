@@ -27,6 +27,7 @@ const en = {
     submit: "Submit",
     profile: "Profile",
     language: "Language",
+    signOut: "Sign out",
   },
   common: {
     points: "points",
@@ -146,6 +147,7 @@ const de: Dictionary = {
     submit: "Eintragen",
     profile: "Profil",
     language: "Sprache",
+    signOut: "Abmelden",
   },
   common: {
     points: "Punkte",

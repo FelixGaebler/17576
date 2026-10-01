@@ -1,0 +1,26 @@
+apiVersion: v2
+name: twentysix-cubed
+description: >-
+  26³ – a gamified internal glossary for three-letter acronyms.
+  26 × 26 × 26 = 17,576 combinations: how many does your company have a meaning for?
+type: application
+# Chart version; bump on every chart change (SemVer).
+version: 0.1.0
+# Application version; used as the default image tag.
+appVersion: "0.1.0"
+home: https://github.com/felixgaebler/twentysix-cubed
+sources:
+  - https://github.com/felixgaebler/twentysix-cubed
+icon: https://raw.githubusercontent.com/felixgaebler/twentysix-cubed/main/src/app/icon.svg
+keywords:
+  - glossary
+  - acronyms
+  - gamification
+  - knowledge-base
+  - nextjs
+  - postgresql
+maintainers:
+  - name: Felix Gaebler
+    email: felix@gaebler.dev
+annotations:
+  artifacthub.io/license: AGPL-3.0-only

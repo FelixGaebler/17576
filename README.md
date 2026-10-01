@@ -56,8 +56,9 @@ mean something inside your company, and build a useful glossary along the way.
   on a scoreboard and each profile shows how the score came together.
 - **English and German.** Language switch in the header, browser language by
   default. Adding another language is one dictionary file.
-- **Ready for your login.** Authentication is a single function you replace
-  with your identity provider (Keycloak, Entra ID, Okta, …).
+- **Single sign-on via OpenID Connect.** Works with Keycloak, Microsoft Entra
+  ID, Okta, Auth0, Google, Authentik, Zitadel and any other OIDC provider –
+  configured with a few environment variables.
 
 ## How the game works
 
@@ -101,8 +102,8 @@ instance. To make it yours:
 1. **Fork or clone** this repository.
 2. **Provide a PostgreSQL database** (any PostgreSQL 14+ works; see
    [Getting started](#getting-started)).
-3. **Connect your login** by replacing `getCurrentUser()` in
-   [`lib/auth.ts`](lib/auth.ts) – see [Authentication](#authentication).
+3. **Connect your identity provider** via OpenID Connect – see
+   [Authentication](#authentication).
 4. **Adjust the texts** in [`lib/i18n.ts`](lib/i18n.ts) – the wording says
    "our company" and works as is, but you can mention your company by name or
    add a language.
@@ -143,15 +144,22 @@ bun run db:seed         # 10 users, ~60 acronyms – resets users and glossary d
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You are signed in as the
-development user *Felix Weber*.
+Open [http://localhost:3000](http://localhost:3000). Without OIDC settings you
+are signed in as the development user *Felix Weber*.
 
 ### Environment variables
 
-| Variable            | Required | Description                                                   |
-| ------------------- | :------: | ------------------------------------------------------------- |
-| `DATABASE_URL`      |   yes    | PostgreSQL connection string                                  |
-| `TEST_DATABASE_URL` |    no    | Separate database for the scoring tests (it gets wiped!)      |
+| Variable             | Required    | Description                                                         |
+| -------------------- | :---------: | ------------------------------------------------------------------- |
+| `DATABASE_URL`       |     yes     | PostgreSQL connection string                                        |
+| `OIDC_ISSUER`        | for sign-in | Issuer URL of your provider; enables OIDC when set                  |
+| `OIDC_CLIENT_ID`     | for sign-in | Client ID registered at the provider                                |
+| `OIDC_CLIENT_SECRET` |     no      | Client secret; omit for a public client (PKCE only)                 |
+| `OIDC_SCOPES`        |     no      | Requested scopes, default `openid profile email`                    |
+| `APP_URL`            | for sign-in | Public URL of the app, e.g. `https://acronyms.example.com`          |
+| `SESSION_SECRET`     | for sign-in | At least 32 random characters, encrypts the session cookie          |
+| `AUTH_DEV_USER`      |     no      | `true` allows the shared development user in production (demos only) |
+| `TEST_DATABASE_URL`  |     no      | Separate database for the scoring tests (it gets wiped!)            |
 
 ## How it is built
 
@@ -164,6 +172,7 @@ development user *Felix Weber*.
 | Data        | [Prisma 8](https://www.prisma.io) on PostgreSQL                                 |
 | Validation  | [Zod](https://zod.dev), shared by browser and server                           |
 | UI          | [shadcn/ui](https://ui.shadcn.com) (Base UI), Tailwind CSS 4, lucide icons      |
+| Auth        | OpenID Connect via [openid-client](https://github.com/panva/openid-client), encrypted session cookie ([jose](https://github.com/panva/jose)) |
 | Tests       | `bun test`                                                                      |
 
 There are no repositories, service layers or other ceremony: pages call small,
@@ -174,16 +183,22 @@ well-named functions that use Prisma directly.
 ```text
 src/app/                    Pages: Home, Search, Submit, Scoreboard, Profile, 404
 src/app/submit/actions.ts   Server action for submissions
+src/app/auth/                Sign-in, callback and sign-out routes (OIDC)
+src/proxy.ts                Redirects visitors without a session to the sign-in
 components/                 App components (mascot, acronym input, cards, nav)
 components/ui/              shadcn/ui components
 lib/validation.ts           Acronym and meaning validation + normalization
 lib/scoring.ts              submitAcronym(): classification, points, transaction
 lib/glossary.ts             Global progress and acronym lookup
 lib/auth.ts                 getCurrentUser() – the only place that knows about login
+lib/oidc.ts                 OpenID Connect flow (discovery, PKCE, token exchange)
+lib/session.ts              Encrypted session cookie
 lib/i18n.ts                 Dictionaries (English, German)
 src/prisma/contract.prisma  Data model
 src/prisma/seed.ts          Example data
 migrations/                 Database migrations
+Dockerfile                  App image (slim) and migration image (--target migrate)
+helm/                       Helm chart for Kubernetes
 ```
 
 ### Data model
@@ -257,17 +272,78 @@ therefore ends as `ALREADY_SUBMITTED`, never as double points.
 
 ## Authentication
 
-There is deliberately no login yet. All code asks a single function for the
-current user:
+26³ signs users in with **OpenID Connect** (authorization code flow with PKCE).
+Any standards-compliant provider works; nothing in the code is specific to one
+vendor.
 
-```ts
-// lib/auth.ts
-export const getCurrentUser = cache(async () => { /* returns the development user */ })
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant A as 26³
+    participant P as Identity provider
+    B->>A: open any page
+    A-->>B: no session → /auth/login
+    B->>P: authorize (PKCE, state, nonce)
+    P-->>B: sign in → /auth/callback?code=…
+    B->>A: callback
+    A->>P: exchange code, validate ID token
+    A-->>B: encrypted session cookie → back to the page
 ```
 
-To connect your identity provider, read the user's id from your session (for
-example a Keycloak token) and look up or create the `User` with that
-`externalId`. Pages, scoring and the scoreboard do not change.
+On every sign-in the user is created or updated from the ID token: `sub`
+becomes `User.externalId`, `name` (or `preferred_username`) the display name,
+plus `email` and `picture`. The session is an encrypted, HTTP-only cookie that
+lasts 7 days; *Sign out* in the header clears it and also ends the session at
+the provider if it supports RP-initiated logout.
+
+### Configure your provider
+
+Register 26³ as a client ("web application", authorization code flow) and set:
+
+| Setting                  | Value                                   |
+| ------------------------ | --------------------------------------- |
+| Redirect URI             | `https://<your-app>/auth/callback`      |
+| Post-logout redirect URI | `https://<your-app>/`                   |
+| Scopes                   | `openid profile email`                  |
+
+Then set `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `APP_URL` and
+`SESSION_SECRET` (see [Environment variables](#environment-variables)). Typical
+issuer URLs:
+
+| Provider            | `OIDC_ISSUER`                                               |
+| ------------------- | ----------------------------------------------------------- |
+| Keycloak            | `https://keycloak.example.com/realms/<realm>`               |
+| Microsoft Entra ID  | `https://login.microsoftonline.com/<tenant-id>/v2.0`        |
+| Okta                | `https://<org>.okta.com/oauth2/default`                     |
+| Auth0               | `https://<tenant>.auth0.com/`                               |
+| Google              | `https://accounts.google.com`                               |
+| Authentik           | `https://authentik.example.com/application/o/<slug>/`       |
+
+The issuer must serve `/.well-known/openid-configuration`; everything else is
+discovered from there. Plain `http://` issuers are accepted for local testing.
+
+**Keycloak example:** create a client `twentysix-cubed` with *Client
+authentication* on and *Standard flow* enabled, add the redirect URIs above,
+and copy the secret from the *Credentials* tab:
+
+```bash
+OIDC_ISSUER=https://keycloak.example.com/realms/company
+OIDC_CLIENT_ID=twentysix-cubed
+OIDC_CLIENT_SECRET=<from the Credentials tab>
+APP_URL=https://acronyms.example.com
+SESSION_SECRET=$(openssl rand -base64 32)
+```
+
+### Without a provider
+
+If `OIDC_ISSUER` is not set, everybody is signed in as one shared development
+user – handy for local development. In production (`NODE_ENV=production`) this
+is refused unless you set `AUTH_DEV_USER=true` explicitly, so a missing
+configuration can't silently open the app to everyone.
+
+All code asks a single function for the current user –
+`getCurrentUser()` in [`lib/auth.ts`](lib/auth.ts) – so a different login
+mechanism would only need to change that file.
 
 ## Internationalization
 
@@ -336,6 +412,70 @@ bun run start
 Any platform that runs Node.js 24 and can reach PostgreSQL works – a VM, a
 container platform or Kubernetes.
 
+### Docker
+
+The [`Dockerfile`](Dockerfile) builds two images from the same source:
+
+| Image                     | Build                                  | Contents                                                        |
+| ------------------------- | -------------------------------------- | --------------------------------------------------------------- |
+| `twentysix-cubed`         | `docker build .`                       | `node:24-slim` with only the standalone server, non-root (~430 MB) |
+| `twentysix-cubed-migrate` | `docker build --target migrate .`      | Prisma CLI + migrations, runs `db migrate` once and exits        |
+
+```bash
+docker build -t twentysix-cubed .
+docker build -t twentysix-cubed-migrate --target migrate .
+```
+
+Apply migrations, then start the app with your database and OIDC settings:
+
+```bash
+docker run --rm -e DATABASE_URL=postgresql://… twentysix-cubed-migrate
+
+docker run -p 3000:3000 \
+  -e DATABASE_URL=postgresql://… \
+  -e OIDC_ISSUER=https://keycloak.example.com/realms/company \
+  -e OIDC_CLIENT_ID=twentysix-cubed \
+  -e OIDC_CLIENT_SECRET=… \
+  -e APP_URL=https://acronyms.example.com \
+  -e SESSION_SECRET=… \
+  twentysix-cubed
+```
+
+For a quick demo without a provider, replace the `OIDC_*`, `APP_URL` and
+`SESSION_SECRET` variables with `-e AUTH_DEV_USER=true`.
+
+Pass values without quotes; `docker run --env-file` keeps them and the
+connection string becomes invalid.
+
+### Kubernetes (Helm)
+
+The chart in [`helm/`](helm) deploys the app and runs the migration image as a
+`pre-install`/`pre-upgrade` hook. It expects an existing PostgreSQL database
+and Secrets for the connection string and the OIDC credentials:
+
+```bash
+kubectl create secret generic twentysix-cubed-db \
+  --from-literal=DATABASE_URL='postgresql://user:password@host:5432/db'
+
+kubectl create secret generic twentysix-cubed-oidc \
+  --from-literal=OIDC_CLIENT_SECRET='…' \
+  --from-literal=SESSION_SECRET="$(openssl rand -base64 32)"
+
+helm install twentysix-cubed ./helm \
+  --set image.repository=ghcr.io/<you>/twentysix-cubed \
+  --set migrations.image.repository=ghcr.io/<you>/twentysix-cubed-migrate \
+  --set ingress.enabled=true \
+  --set ingress.hosts[0].host=acronyms.example.com \
+  --set oidc.enabled=true \
+  --set oidc.issuer=https://keycloak.example.com/realms/company \
+  --set oidc.clientId=twentysix-cubed \
+  --set oidc.appUrl=https://acronyms.example.com
+```
+
+See [`helm/values.yaml`](helm/values.yaml) for all options.
+
+### Prisma Compute
+
 The repository also contains a ready-made setup for
 [Prisma Compute](https://www.prisma.io): the GitHub Actions workflow in
 `.github/workflows` uses Prisma Composer (`module.ts`) to provision Prisma
@@ -348,7 +488,7 @@ bun run compute:connect
 
 ## Ideas
 
-- Sign-in via Keycloak (or another OpenID Connect provider)
+- Roles from the identity provider, e.g. moderators via a group claim
 - Moderation: edit or merge meanings, report nonsense
 - Import an existing glossary from CSV
 - Achievements, e.g. "first to find a triple meaning"
