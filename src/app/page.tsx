@@ -1,19 +1,21 @@
+
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
+
 export default function Home() {
   return (
-    <main>
-      <h1>Next.js on Prisma Compute</h1>
-      <p>This app uses Next.js App Router, Prisma ORM, and PostgreSQL.</p>
-      <p>
-        Query the seeded users at{' '}
-        <a href="/api/users">
-          <code>/api/users</code>
-        </a>
-        .
-      </p>
-      <p>
-        Connect it with <code>bun run compute:connect</code>
-        , then push to deploy with Prisma Composer.
-      </p>
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      <Progress value={56} className="w-full max-w-sm">
+        <ProgressLabel>Upload progress</ProgressLabel>
+        <ProgressValue />
+      </Progress>
+      <InputOTP maxLength={3} pattern="^[A-Z]+$">
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+        </InputOTPGroup>
+      </InputOTP>
     </main>
   )
 }
