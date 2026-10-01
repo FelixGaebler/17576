@@ -3,6 +3,7 @@ import Link from "next/link"
 import { PlusIcon } from "lucide-react"
 
 import { AcronymCard } from "@/components/acronym-card"
+import { EmptyState } from "@/components/empty-state"
 import { buttonVariants } from "@/components/ui/button"
 import { findAcronym } from "@/lib/glossary"
 import { getI18n } from "@/lib/i18n-server"
@@ -46,17 +47,21 @@ async function SearchResult({ code }: { code: string }) {
     const [beforeCode, afterCode] = t.search.noMeaning.split("{code}")
 
     return (
-      <div className="space-y-4 rounded-3xl border border-dashed p-8 text-center">
-        <p className="text-lg">
-          {beforeCode}
-          <span className="font-mono font-semibold tracking-wider">{code}</span>
-          {afterCode}
-        </p>
+      <EmptyState
+        mood="confused"
+        title={
+          <>
+            {beforeCode}
+            <span className="font-mono font-semibold tracking-wider">{code}</span>
+            {afterCode}
+          </>
+        }
+      >
         <Link href={`/submit?acronym=${code}`} className={buttonVariants()}>
           <PlusIcon data-icon="inline-start" aria-hidden />
           {t.search.add(code)}
         </Link>
-      </div>
+      </EmptyState>
     )
   }
 

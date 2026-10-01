@@ -8,7 +8,9 @@ import { AcronymCard } from "@/components/acronym-card"
 import { AcronymInput } from "@/components/acronym-input"
 import { useI18n } from "@/components/i18n-provider"
 import { ScoreBadge } from "@/components/score-badge"
+import { TileCharacter } from "@/components/tile-character"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { Dictionary } from "@/lib/i18n"
@@ -146,34 +148,37 @@ function SubmissionResultPanel({ result }: { result: SubmissionResult }) {
   const isDuplicate = result.outcome === "DUPLICATE_FOUND"
 
   return (
-    <section
-      aria-labelledby="result-title"
-      className={cn("space-y-5 rounded-3xl border p-6", isDuplicate && "border-primary bg-primary/10")}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h2 id="result-title" className="flex items-center gap-2 text-xl font-semibold">
-            {isDuplicate && <SparklesIcon className="size-5 text-primary-foreground" aria-hidden />}
-            {title}
-          </h2>
-          <p className="text-muted-foreground">{description}</p>
+    <Card className={cn("text-base", isDuplicate && "border-primary bg-primary/10")}>
+      <CardContent className="space-y-5">
+        <div className="flex items-start gap-4">
+          <TileCharacter
+            mood={result.outcome === "ALREADY_SUBMITTED" ? "confused" : "happy"}
+            className="w-14 shrink-0"
+          />
+          <div className="flex-1 space-y-1">
+            <h2 className="flex items-center gap-2 text-xl font-semibold">
+              {isDuplicate && <SparklesIcon className="size-5 text-primary-foreground" aria-hidden />}
+              {title}
+            </h2>
+            <p className="text-muted-foreground">{description}</p>
+          </div>
+          <ScoreBadge points={result.awardedPoints} className={cn(isDuplicate && "text-base")} />
         </div>
-        <ScoreBadge points={result.awardedPoints} className={cn(isDuplicate && "text-base")} />
-      </div>
 
-      {result.glossaryEntry && (
-        <AcronymCard
-          code={result.glossaryEntry.code}
-          meanings={result.glossaryEntry.meanings}
-          highlight={result.outcome === "ALREADY_SUBMITTED" ? undefined : result.meaning}
-        />
-      )}
+        {result.glossaryEntry && (
+          <AcronymCard
+            code={result.glossaryEntry.code}
+            meanings={result.glossaryEntry.meanings}
+            highlight={result.outcome === "ALREADY_SUBMITTED" ? undefined : result.meaning}
+          />
+        )}
 
-      <p className="text-sm">
-        <Link href="/profile" className="font-medium underline underline-offset-4">
-          {t.submit.viewHistory}
-        </Link>
-      </p>
-    </section>
+        <p className="text-sm">
+          <Link href="/profile" className="font-medium underline underline-offset-4">
+            {t.submit.viewHistory}
+          </Link>
+        </p>
+      </CardContent>
+    </Card>
   )
 }

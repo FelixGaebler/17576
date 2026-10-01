@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 270" role="img" aria-labelledby="title">
+  <title id="title">Scoring: +5 new acronym, +10 duplicate found, +1 existing entry, 0 already submitted</title>
+  <style>
+    .ink { stroke: #1a2e05; }
+    .ink-fill { fill: #1a2e05; }
+    .label { fill: #111814; }
+    .muted { fill: #66737a; }
+    .chip { fill: #eef1f0; }
+    @media (prefers-color-scheme: dark) {
+      .ink { stroke: #f4f4f5; }
+      .label { fill: #f4f4f5; }
+      .muted { fill: #a1aab0; }
+      .chip { fill: #2a3336; }
+    }
+    text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; text-anchor: middle; }
+  </style>
+  <defs>
+    <g id="body">
+      <path class="ink" fill="none" d="M46 116 v14 h-8 M74 116 v14 h8" />
+      <rect x="20" y="28" width="80" height="90" rx="22" fill="#9fe300" stroke="#1a2e05" />
+      <rect x="32" y="40" width="56" height="18" rx="9" fill="#ffffff" fill-opacity="0.6" stroke="none" />
+      <circle cx="47" cy="78" r="4.5" fill="#1a2e05" stroke="none" />
+      <circle cx="73" cy="78" r="4.5" fill="#1a2e05" stroke="none" />
+    </g>
+    <g id="happy" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path class="ink" fill="none" d="M22 78 q-12 8 -12 22 M98 70 q16 -6 18 -28" />
+      <use href="#body" />
+      <path d="M50 96 q10 9 20 0" fill="none" stroke="#1a2e05" />
+    </g>
+    <g id="excited" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path class="ink" fill="none" d="M22 70 q-14 -6 -16 -28 M98 70 q14 -6 16 -28" />
+      <use href="#body" />
+      <path d="M48 92 q12 14 24 0 z" fill="#1a2e05" stroke="#1a2e05" />
+      <path d="M8 22 l4 -6 M116 22 l-4 -6 M60 6 v-6" stroke="#9fe300" fill="none" />
+    </g>
+    <g id="confused" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path class="ink" fill="none" d="M22 72 q-14 -2 -16 -18 M98 72 q14 -2 16 -18" />
+      <use href="#body" />
+      <path d="M50 98 q5 -5 10 0 t10 0" fill="none" stroke="#1a2e05" />
+      <text x="108" y="26" class="muted" font-size="28" font-weight="700" stroke="none">?</text>
+    </g>
+    <g id="sad" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path class="ink" fill="none" d="M22 76 q-10 10 -8 26 M98 76 q10 10 8 26" />
+      <use href="#body" />
+      <path d="M50 100 q10 -8 20 0" fill="none" stroke="#1a2e05" />
+    </g>
+  </defs>
+
+  <g transform="translate(50 6)"><use href="#happy" /></g>
+  <rect x="75" y="160" width="70" height="36" rx="18" class="chip" />
+  <text x="110" y="185" class="label" font-size="20" font-weight="700">+5</text>
+  <text x="110" y="226" class="label" font-size="18" font-weight="600">New acronym</text>
+  <text x="110" y="252" class="muted" font-size="14">Nobody knew it yet</text>
+
+  <g transform="translate(270 6)"><use href="#excited" /></g>
+  <rect x="295" y="160" width="70" height="36" rx="18" fill="#9fe300" />
+  <text x="330" y="185" fill="#1a2e05" font-size="20" font-weight="700">+10</text>
+  <text x="330" y="226" class="label" font-size="18" font-weight="600">Duplicate found</text>
+  <text x="330" y="252" class="muted" font-size="14">Known acronym, new meaning</text>
+
+  <g transform="translate(490 6)"><use href="#confused" /></g>
+  <rect x="515" y="160" width="70" height="36" rx="18" class="chip" />
+  <text x="550" y="185" class="label" font-size="20" font-weight="700">+1</text>
+  <text x="550" y="226" class="label" font-size="18" font-weight="600">Existing entry</text>
+  <text x="550" y="252" class="muted" font-size="14">Already documented</text>
+
+  <g transform="translate(710 6)"><use href="#sad" /></g>
+  <rect x="735" y="160" width="70" height="36" rx="18" class="chip" />
+  <text x="770" y="185" class="label" font-size="20" font-weight="700">0</text>
+  <text x="770" y="226" class="label" font-size="18" font-weight="600">Already submitted</text>
+  <text x="770" y="252" class="muted" font-size="14">One score per acronym</text>
+</svg>

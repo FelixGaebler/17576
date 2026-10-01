@@ -35,6 +35,11 @@ const en = {
     errorText: "We couldn't load this page. Please try again.",
     tryAgain: "Try again",
   },
+  notFound: {
+    title: "Page not found",
+    description: "Not even our company has a meaning for this one. And digits don't count anyway.",
+    home: "Back to home",
+  },
   home: {
     question: "How many three-letter combinations does our company have a meaning for?",
     progressLabel: "Glossary progress",
@@ -59,6 +64,9 @@ const en = {
     score: "Score",
     rank: "Rank",
     ofTotal: (total: number) => `of ${total}`,
+    submissions: "Acronyms submitted",
+    newAcronyms: "New acronyms",
+    duplicatesFound: "Duplicates found",
     history: "Score history",
     empty: "You haven't submitted any acronyms yet.",
     firstSubmission: "Submit your first acronym",
@@ -146,6 +154,11 @@ const de: Dictionary = {
     errorText: "Die Seite konnte nicht geladen werden. Bitte versuche es erneut.",
     tryAgain: "Erneut versuchen",
   },
+  notFound: {
+    title: "Seite nicht gefunden",
+    description: "Dafür hat nicht mal unser Unternehmen eine Bedeutung. Und Ziffern zählen sowieso nicht.",
+    home: "Zur Startseite",
+  },
   home: {
     question: "Für wie viele Kombinationen aus drei Buchstaben hat unser Unternehmen eine Bedeutung?",
     progressLabel: "Glossar-Fortschritt",
@@ -170,6 +183,9 @@ const de: Dictionary = {
     score: "Punkte",
     rank: "Platz",
     ofTotal: (total) => `von ${total}`,
+    submissions: "Eingereichte Abkürzungen",
+    newAcronyms: "Neue Abkürzungen",
+    duplicatesFound: "Gefundene Duplikate",
     history: "Punkteverlauf",
     empty: "Du hast noch keine Abkürzungen eingetragen.",
     firstSubmission: "Erste Abkürzung eintragen",

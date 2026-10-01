@@ -2,7 +2,9 @@ import Link from "next/link"
 import { PlusIcon, SearchIcon } from "lucide-react"
 
 import { ProgressOverview } from "@/components/progress-overview"
+import { TileCharacter } from "@/components/tile-character"
 import { buttonVariants } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { getGlossaryProgress } from "@/lib/glossary"
 import { formatNumber } from "@/lib/format"
 import { getI18n } from "@/lib/i18n-server"
@@ -20,13 +22,16 @@ export default async function HomePage() {
   return (
     <div className="space-y-12">
       <section aria-labelledby="hero-title" className="space-y-8">
-        <div className="space-y-3">
-          <h1 id="hero-title" className="text-6xl font-bold tracking-tight sm:text-7xl">
-            26³
-          </h1>
-          <p className="max-w-md text-lg text-balance text-muted-foreground">
-            {t.home.question}
-          </p>
+        <div className="flex items-start justify-between gap-6">
+          <div className="space-y-3">
+            <h1 id="hero-title" className="text-6xl font-bold tracking-tight sm:text-7xl">
+              26³
+            </h1>
+            <p className="max-w-md text-lg text-balance text-muted-foreground">
+              {t.home.question}
+            </p>
+          </div>
+          <TileCharacter mood="happy" className="hidden w-28 shrink-0 sm:block" />
         </div>
 
         <ProgressOverview discovered={progress.discovered} percentage={progress.percentage} />
@@ -44,14 +49,16 @@ export default async function HomePage() {
       </section>
 
       <section aria-label={t.home.statistics}>
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border bg-border sm:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col justify-between gap-1 bg-background p-5">
-              <dt className="text-sm text-muted-foreground">{stat.label}</dt>
-              <dd className="text-2xl font-semibold tabular-nums">{formatNumber(stat.value, locale)}</dd>
-            </div>
-          ))}
-        </dl>
+        <Card className="gap-0 py-0">
+          <dl className="grid grid-cols-2 gap-px bg-border sm:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex flex-col justify-between gap-1 bg-card p-5">
+                <dt className="text-sm text-muted-foreground">{stat.label}</dt>
+                <dd className="text-2xl font-semibold tabular-nums">{formatNumber(stat.value, locale)}</dd>
+              </div>
+            ))}
+          </dl>
+        </Card>
       </section>
     </div>
   )

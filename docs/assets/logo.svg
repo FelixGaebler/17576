@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 150" role="img" aria-labelledby="title">
+  <title id="title">26³</title>
+  <style>
+    .ink { stroke: #1a2e05; fill: none; }
+    .ink-fill { fill: #1a2e05; }
+    .word { fill: #111814; }
+    @media (prefers-color-scheme: dark) {
+      .ink { stroke: #f4f4f5; }
+      .word { fill: #f4f4f5; }
+    }
+  </style>
+  <g transform="translate(10 6)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path class="ink" d="M46 116 v14 h-8 M74 116 v14 h8" />
+    <path class="ink" d="M22 78 q-12 8 -12 22 M98 70 q16 -6 18 -28" />
+    <rect x="20" y="28" width="80" height="90" rx="22" fill="#9fe300" stroke="#1a2e05" />
+    <rect x="32" y="40" width="56" height="18" rx="9" fill="#ffffff" fill-opacity="0.6" />
+    <circle cx="47" cy="78" r="4.5" class="ink-fill" />
+    <circle cx="73" cy="78" r="4.5" class="ink-fill" />
+    <path d="M50 96 q10 9 20 0" fill="none" stroke="#1a2e05" />
+    <path d="M110 18 l4 -6 M118 28 l7 -2 M104 12 l-1 -7" stroke="#9fe300" fill="none" />
+  </g>
+  <text x="160" y="118" class="word" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="104" font-weight="800" letter-spacing="-5">26</text>
+  <text x="282" y="66" class="word" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="56" font-weight="800">3</text>
+</svg>

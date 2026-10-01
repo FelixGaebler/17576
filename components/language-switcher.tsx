@@ -31,7 +31,7 @@ export async function LanguageSwitcher() {
           aria-pressed={option === locale}
           className={cn(
             "rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground uppercase outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-            option === locale && "bg-background text-foreground shadow-sm",
+            option === locale && "bg-background text-foreground ring-1 ring-border",
           )}
         >
           {option}
