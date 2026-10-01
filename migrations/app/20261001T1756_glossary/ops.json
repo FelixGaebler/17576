@@ -1,0 +1,1262 @@
+[
+  {
+    "id": "dropTable.post",
+    "label": "Drop table \"post\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "post"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"post\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"post\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"post\"",
+        "sql": "DROP TABLE \"public\".\"post\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"post\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"post\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.user.name",
+    "label": "Drop column \"name\" from \"user\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "name",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"name\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "name"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"name\"",
+        "sql": "ALTER TABLE \"public\".\"user\" DROP COLUMN \"name\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"name\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "name"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.user.user_username_key",
+    "label": "Drop constraint \"user_username_key\" on \"user\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "user_username_key",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"user_username_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_username_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"user_username_key\"",
+        "sql": "ALTER TABLE \"public\".\"user\" DROP CONSTRAINT \"user_username_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"user_username_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_username_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.user.username",
+    "label": "Drop column \"username\" from \"user\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "username",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"username\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "username"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"username\"",
+        "sql": "ALTER TABLE \"public\".\"user\" DROP COLUMN \"username\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"username\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "username"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.acronym",
+    "label": "Create table \"acronym\"",
+    "summary": "Creates table \"acronym\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"acronym\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acronym\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"acronym\"",
+        "sql": "CREATE TABLE \"public\".\"acronym\" (\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdByUserId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"acronym_code_format_e2023756\" CHECK (code ~ '^[A-Z]{3}$')\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"acronym\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acronym\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.meaning",
+    "label": "Create table \"meaning\"",
+    "summary": "Creates table \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"meaning\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"meaning\"",
+        "sql": "CREATE TABLE \"public\".\"meaning\" (\n  \"acronymId\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdByUserId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"normalizedText\" text NOT NULL,\n  \"text\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"meaning\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.scoreTransaction",
+    "label": "Create table \"scoreTransaction\"",
+    "summary": "Creates table \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"scoreTransaction\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"scoreTransaction\"",
+        "sql": "CREATE TABLE \"public\".\"scoreTransaction\" (\n  \"acronymId\" int4 NOT NULL,\n  \"amount\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"meaningId\" int4 NOT NULL,\n  \"type\" text NOT NULL,\n  \"userId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"scoreTransaction_type_check_34d44838\" CHECK (\"type\" IN ('NEW_ACRONYM', 'EXISTING_ENTRY', 'DUPLICATE_FOUND'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"scoreTransaction\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.user.avatarUrl",
+    "label": "Add column \"avatarUrl\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "avatarUrl",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"avatarUrl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "avatarUrl"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"avatarUrl\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"avatarUrl\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"avatarUrl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "avatarUrl"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.user.score",
+    "label": "Add column \"score\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "score",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"score\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "score"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"score\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"score\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"score\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "score"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.user.displayName",
+    "label": "Add column \"displayName\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "displayName",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"displayName\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "displayName"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"displayName\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"displayName\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"displayName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "displayName"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.backfill-user-displayName",
+    "label": "Data transform: backfill-user-displayName",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check backfill-user-displayName has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"user\" WHERE \"displayName\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run backfill-user-displayName",
+        "sql": "UPDATE \"public\".\"user\" SET \"displayName\" = split_part(\"email\", '@', 1), \"updatedAt\" = $1 WHERE \"displayName\" IS NULL",
+        "params": [
+          "2026-10-01T17:58:59.517Z"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify backfill-user-displayName resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"user\" WHERE \"displayName\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.user.displayName",
+    "label": "Set NOT NULL on \"user\".\"displayName\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "displayName",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"displayName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "displayName"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"displayName\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"user\" WHERE \"displayName\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"displayName\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ALTER COLUMN \"displayName\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"displayName\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "displayName",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.user.externalId",
+    "label": "Add column \"externalId\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "externalId",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"externalId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "externalId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"externalId\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"externalId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"externalId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "externalId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.backfill-user-externalId",
+    "label": "Data transform: backfill-user-externalId",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check backfill-user-externalId has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"user\" WHERE \"externalId\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run backfill-user-externalId",
+        "sql": "UPDATE \"public\".\"user\" SET \"externalId\" = 'legacy-' || \"id\", \"updatedAt\" = $1 WHERE \"externalId\" IS NULL",
+        "params": [
+          "2026-10-01T17:58:59.519Z"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify backfill-user-externalId resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"user\" WHERE \"externalId\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.user.externalId",
+    "label": "Set NOT NULL on \"user\".\"externalId\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "externalId",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"externalId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "externalId"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"externalId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"user\" WHERE \"externalId\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"externalId\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ALTER COLUMN \"externalId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"externalId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "externalId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.acronym.acronym_code_key",
+    "label": "Add unique constraint on \"acronym\" (code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "acronym_code_key",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"acronym_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_code_key",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"acronym_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\" ADD CONSTRAINT \"acronym_code_key\" UNIQUE (\"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"acronym_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_code_key",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.meaning.meaning_acronymId_normalizedText_key",
+    "label": "Add unique constraint on \"meaning\" (acronymId, normalizedText)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "meaning_acronymId_normalizedText_key",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"meaning_acronymId_normalizedText_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_normalizedText_key",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"meaning_acronymId_normalizedText_key\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" ADD CONSTRAINT \"meaning_acronymId_normalizedText_key\" UNIQUE (\"acronymId\", \"normalizedText\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"meaning_acronymId_normalizedText_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_normalizedText_key",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.scoreTransaction.scoreTransaction_userId_acronymId_key",
+    "label": "Add unique constraint on \"scoreTransaction\" (userId, acronymId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "scoreTransaction_userId_acronymId_key",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_userId_acronymId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_acronymId_key",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"scoreTransaction_userId_acronymId_key\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ADD CONSTRAINT \"scoreTransaction_userId_acronymId_key\" UNIQUE (\"userId\", \"acronymId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_userId_acronymId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_acronymId_key",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.user.user_externalId_key",
+    "label": "Add unique constraint on \"user\" (externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "user_externalId_key",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"user_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_externalId_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"user_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD CONSTRAINT \"user_externalId_key\" UNIQUE (\"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"user_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_externalId_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.acronym.acronym_createdByUserId_idx_93e8a540",
+    "label": "Create index \"acronym_createdByUserId_idx_93e8a540\" on \"acronym\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "acronym_createdByUserId_idx_93e8a540",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"acronym_createdByUserId_idx_93e8a540\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acronym_createdByUserId_idx_93e8a540\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"acronym_createdByUserId_idx_93e8a540\"",
+        "sql": "CREATE INDEX \"acronym_createdByUserId_idx_93e8a540\" ON \"public\".\"acronym\" (\"createdByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"acronym_createdByUserId_idx_93e8a540\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acronym_createdByUserId_idx_93e8a540\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.meaning.meaning_acronymId_idx_cef5a734",
+    "label": "Create index \"meaning_acronymId_idx_cef5a734\" on \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "meaning_acronymId_idx_cef5a734",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"meaning_acronymId_idx_cef5a734\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"meaning_acronymId_idx_cef5a734\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"meaning_acronymId_idx_cef5a734\"",
+        "sql": "CREATE INDEX \"meaning_acronymId_idx_cef5a734\" ON \"public\".\"meaning\" (\"acronymId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"meaning_acronymId_idx_cef5a734\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"meaning_acronymId_idx_cef5a734\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.meaning.meaning_createdByUserId_idx_93e8a540",
+    "label": "Create index \"meaning_createdByUserId_idx_93e8a540\" on \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "meaning_createdByUserId_idx_93e8a540",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"meaning_createdByUserId_idx_93e8a540\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"meaning_createdByUserId_idx_93e8a540\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"meaning_createdByUserId_idx_93e8a540\"",
+        "sql": "CREATE INDEX \"meaning_createdByUserId_idx_93e8a540\" ON \"public\".\"meaning\" (\"createdByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"meaning_createdByUserId_idx_93e8a540\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"meaning_createdByUserId_idx_93e8a540\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.scoreTransaction.scoreTransaction_acronymId_idx_cef5a734",
+    "label": "Create index \"scoreTransaction_acronymId_idx_cef5a734\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "scoreTransaction_acronymId_idx_cef5a734",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"scoreTransaction_acronymId_idx_cef5a734\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction_acronymId_idx_cef5a734\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"scoreTransaction_acronymId_idx_cef5a734\"",
+        "sql": "CREATE INDEX \"scoreTransaction_acronymId_idx_cef5a734\" ON \"public\".\"scoreTransaction\" (\"acronymId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"scoreTransaction_acronymId_idx_cef5a734\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction_acronymId_idx_cef5a734\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.scoreTransaction.scoreTransaction_meaningId_idx_0b1880e1",
+    "label": "Create index \"scoreTransaction_meaningId_idx_0b1880e1\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "scoreTransaction_meaningId_idx_0b1880e1",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"scoreTransaction_meaningId_idx_0b1880e1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction_meaningId_idx_0b1880e1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"scoreTransaction_meaningId_idx_0b1880e1\"",
+        "sql": "CREATE INDEX \"scoreTransaction_meaningId_idx_0b1880e1\" ON \"public\".\"scoreTransaction\" (\"meaningId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"scoreTransaction_meaningId_idx_0b1880e1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction_meaningId_idx_0b1880e1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.scoreTransaction.scoreTransaction_userId_idx_a489d58a",
+    "label": "Create index \"scoreTransaction_userId_idx_a489d58a\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "scoreTransaction_userId_idx_a489d58a",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"scoreTransaction_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"scoreTransaction_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"scoreTransaction_userId_idx_a489d58a\" ON \"public\".\"scoreTransaction\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"scoreTransaction_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"scoreTransaction_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.acronym.acronym_createdByUserId_fkey",
+    "label": "Add foreign key \"acronym_createdByUserId_fkey\" on \"acronym\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "acronym_createdByUserId_fkey",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"acronym_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_createdByUserId_fkey",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"acronym_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\"\nADD CONSTRAINT \"acronym_createdByUserId_fkey\"\nFOREIGN KEY (\"createdByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"acronym_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_createdByUserId_fkey",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.meaning.meaning_acronymId_fkey",
+    "label": "Add foreign key \"meaning_acronymId_fkey\" on \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "meaning_acronymId_fkey",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"meaning_acronymId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"meaning_acronymId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\"\nADD CONSTRAINT \"meaning_acronymId_fkey\"\nFOREIGN KEY (\"acronymId\")\nREFERENCES \"public\".\"acronym\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"meaning_acronymId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.meaning.meaning_createdByUserId_fkey",
+    "label": "Add foreign key \"meaning_createdByUserId_fkey\" on \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "meaning_createdByUserId_fkey",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"meaning_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_createdByUserId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"meaning_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\"\nADD CONSTRAINT \"meaning_createdByUserId_fkey\"\nFOREIGN KEY (\"createdByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"meaning_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_createdByUserId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.scoreTransaction.scoreTransaction_userId_fkey",
+    "label": "Add foreign key \"scoreTransaction_userId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_userId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"scoreTransaction_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"scoreTransaction_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\"\nADD CONSTRAINT \"scoreTransaction_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"scoreTransaction_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.scoreTransaction.scoreTransaction_acronymId_fkey",
+    "label": "Add foreign key \"scoreTransaction_acronymId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_acronymId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"scoreTransaction_acronymId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_acronymId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"scoreTransaction_acronymId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\"\nADD CONSTRAINT \"scoreTransaction_acronymId_fkey\"\nFOREIGN KEY (\"acronymId\")\nREFERENCES \"public\".\"acronym\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"scoreTransaction_acronymId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_acronymId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.scoreTransaction.scoreTransaction_meaningId_fkey",
+    "label": "Add foreign key \"scoreTransaction_meaningId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_meaningId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"scoreTransaction_meaningId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_meaningId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"scoreTransaction_meaningId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\"\nADD CONSTRAINT \"scoreTransaction_meaningId_fkey\"\nFOREIGN KEY (\"meaningId\")\nREFERENCES \"public\".\"meaning\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"scoreTransaction_meaningId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_meaningId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  }
+]

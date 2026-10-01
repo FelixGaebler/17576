@@ -1,22 +1,63 @@
 // use prisma-next
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?  @unique
-  name      String?
-  posts     Post[]
-  createdAt DateTime @default(now())
-  updatedAt temporal.updatedAt()
+enum ScoreTransactionType {
+  @@type("pg/text@1")
+  NEW_ACRONYM     = "NEW_ACRONYM"
+  EXISTING_ENTRY  = "EXISTING_ENTRY"
+  DUPLICATE_FOUND = "DUPLICATE_FOUND"
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt temporal.updatedAt()
+model User {
+  id          Int      @id @default(autoincrement())
+  // Identifier from the identity provider (Keycloak, later).
+  externalId  String   @unique
+  displayName String
+  email       String   @unique
+  avatarUrl   String?
+  // Cached sum of the user's ScoreTransaction amounts.
+  score       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+}
+
+model Acronym {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique
+  createdByUserId Int
+  createdBy       User      @relation(fields: [createdByUserId], references: [id])
+  meanings        Meaning[]
+  createdAt       DateTime  @default(now())
+  updatedAt       temporal.updatedAt()
+
+  @@check(expression: "code ~ '^[A-Z]{3}$'", name: "acronym_code_format")
+}
+
+model Meaning {
+  id              Int      @id @default(autoincrement())
+  acronymId       Int
+  acronym         Acronym  @relation(fields: [acronymId], references: [id])
+  text            String
+  normalizedText  String
+  createdByUserId Int
+  createdBy       User     @relation(fields: [createdByUserId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       temporal.updatedAt()
+
+  @@unique([acronymId, normalizedText])
+}
+
+model ScoreTransaction {
+  id        Int                  @id @default(autoincrement())
+  userId    Int
+  user      User                 @relation(fields: [userId], references: [id])
+  acronymId Int
+  acronym   Acronym              @relation(fields: [acronymId], references: [id])
+  meaningId Int
+  meaning   Meaning              @relation(fields: [meaningId], references: [id])
+  amount    Int
+  type      ScoreTransactionType
+  createdAt DateTime             @default(now())
+
+  // A user can score each acronym only once, regardless of the meaning.
+  @@unique([userId, acronymId])
 }

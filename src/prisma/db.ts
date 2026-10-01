@@ -1,4 +1,7 @@
 import 'dotenv/config'
+// Prisma's DateTime codecs use the global Temporal API, which Node does not ship yet.
+import 'temporal-polyfill/global'
+import type { } from 'temporal-polyfill/types/global'
 import postgres from '@prisma/orm-postgres/runtime'
 
 import service from '../service'
