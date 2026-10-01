@@ -116,7 +116,7 @@ const en = {
       },
       ALREADY_SUBMITTED: {
         title: "Already submitted",
-        description: "You've already submitted this acronym. No points awarded.",
+        description: "You've already submitted this meaning. No points awarded.",
       },
     },
   },
@@ -235,7 +235,7 @@ const de: Dictionary = {
       },
       ALREADY_SUBMITTED: {
         title: "Bereits eingetragen",
-        description: "Du hast diese Abkürzung schon eingetragen. Es gibt keine Punkte.",
+        description: "Du hast diese Bedeutung schon eingetragen. Es gibt keine Punkte.",
       },
     },
   },

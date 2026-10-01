@@ -16,6 +16,8 @@
   <img alt="Prisma" src="https://img.shields.io/badge/Prisma-8-2D3748?logo=prisma">
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-14%2B-4169E1?logo=postgresql&logoColor=white">
   <img alt="shadcn/ui" src="https://img.shields.io/badge/shadcn%2Fui-Tailwind_4-111111">
+  <img alt="License: AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-9fe300">
+  <img alt="Built with AI" src="https://img.shields.io/badge/built_with-AI_prompts-9fe300">
 </p>
 
 ---
@@ -68,12 +70,13 @@ mean something inside your company, and build a useful glossary along the way.
 | `NEW_ACRONYM`       | Nobody has submitted this acronym yet                  |     +5 |
 | `DUPLICATE_FOUND`   | The acronym exists, but this meaning is new            |    +10 |
 | `EXISTING_ENTRY`    | Acronym and meaning are both already documented        |     +1 |
-| `ALREADY_SUBMITTED` | You have already submitted this acronym (any meaning)  |      0 |
+| `ALREADY_SUBMITTED` | You have already submitted this exact meaning          |      0 |
 
 A few rules keep it fair:
 
-- **One score per person and acronym.** Once you have scored `ABC`, you cannot
-  score it again – not even with a different meaning. Someone else can.
+- **One score per person and meaning.** You cannot score the same meaning of
+  `ABC` twice. A *different* meaning of `ABC` still counts – as a duplicate
+  find, even if you were the one who discovered `ABC`.
 - **Meanings are compared normalized.** Case and extra whitespace are ignored,
   so `Point of Sale` and `  point  OF sale` are the same meaning. There is no
   fuzzy matching.
@@ -186,7 +189,7 @@ migrations/                 Database migrations
 ### Data model
 
 Four tables. `ScoreTransaction` is both the score history and the record of
-who already submitted which acronym – there is no separate "discovery" table.
+who already submitted which meaning – there is no separate "discovery" table.
 
 ```mermaid
 erDiagram
@@ -226,13 +229,13 @@ erDiagram
 flowchart TD
     A[Submit acronym + meaning] --> B{Valid?<br/>3 letters, initials match}
     B -- no --> X[Show validation error]
-    B -- yes --> C{Has this user already<br/>submitted the acronym?}
-    C -- yes --> D[ALREADY_SUBMITTED · 0]
-    C -- no --> E{Does the acronym exist?}
+    B -- yes --> E{Does the acronym exist?}
     E -- no --> F[NEW_ACRONYM · +5<br/>create acronym + meaning]
     E -- yes --> G{Does the normalized<br/>meaning exist?}
-    G -- yes --> H[EXISTING_ENTRY · +1]
     G -- no --> I[DUPLICATE_FOUND · +10<br/>create meaning]
+    G -- yes --> C{Has this user already<br/>submitted this meaning?}
+    C -- yes --> D[ALREADY_SUBMITTED · 0]
+    C -- no --> H[EXISTING_ENTRY · +1]
 ```
 
 Everything after validation runs in one database transaction: glossary records,
@@ -244,7 +247,7 @@ The rules are enforced by the database, not only by application code:
 
 - unique `Acronym.code` plus a check constraint for `^[A-Z]{3}$`
 - unique `(acronymId, normalizedText)` for meanings
-- unique `(userId, acronymId)` for score transactions
+- unique `(userId, meaningId)` for score transactions
 - scores are incremented in SQL (`score = score + n`), never read-modify-written
 
 If two requests race (a double click, or two people discovering the same
@@ -353,10 +356,31 @@ bun run compute:connect
 
 Contributions and forks for your own company are welcome.
 
+## Built with AI
+
+This project was written entirely by prompting an AI coding agent (GitHub
+Copilot in VS Code). Every line of code, the tests, the illustrations and this
+README were generated from natural-language instructions; Felix Gaebler
+decided what to build, reviewed the results and asked for changes.
+
+That does not make it special code: it is reviewed, linted, type-checked and
+tested like any other project. Treat it the same way – read it before you run
+it in your company, and open an issue if something looks wrong.
+
 ## License
 
-No license has been chosen yet. Until a `LICENSE` file is added, all rights are
-reserved by the authors.
+Copyright © 2026 [Felix Gaebler](mailto:felix@gaebler.dev). Licensed under the
+[GNU Affero General Public License v3.0](LICENSE).
+
+In short:
+
+- **Use it freely** – run 26³ in your company, internally or publicly, at no cost.
+- **Change it freely** – adapt it to your needs.
+- **Give back** – if you make changes and let other people use the modified
+  version (including over the network, e.g. as a website or hosted service),
+  you must publish your source code under the same license.
+
+This is a summary, not legal advice; the [license text](LICENSE) is binding.
 
 <p align="center">
   <br>

@@ -68,5 +68,5 @@
   <rect x="735" y="160" width="70" height="36" rx="18" class="chip" />
   <text x="770" y="185" class="label" font-size="20" font-weight="700">0</text>
   <text x="770" y="226" class="label" font-size="18" font-weight="600">Already submitted</text>
-  <text x="770" y="252" class="muted" font-size="14">One score per acronym</text>
+  <text x="770" y="252" class="muted" font-size="14">Same meaning twice</text>
 </svg>

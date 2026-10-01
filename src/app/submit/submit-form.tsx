@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useState, type ComponentProps } from "react"
 import Link from "next/link"
 import { CheckIcon, LoaderCircleIcon, SparklesIcon } from "lucide-react"
 
@@ -14,7 +14,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { Dictionary } from "@/lib/i18n"
-import type { SubmissionResult } from "@/lib/scoring"
+import type { SubmissionOutcome, SubmissionResult } from "@/lib/scoring"
 import { cn } from "@/lib/utils"
 import {
   ACRONYM_LENGTH,
@@ -142,6 +142,14 @@ export function SubmitForm({ initialAcronym }: { initialAcronym: string }) {
   )
 }
 
+// Same characters as docs/assets/scoring.svg.
+const outcomeMoods: Record<SubmissionOutcome, ComponentProps<typeof TileCharacter>["mood"]> = {
+  NEW_ACRONYM: "happy",
+  DUPLICATE_FOUND: "excited",
+  EXISTING_ENTRY: "confused",
+  ALREADY_SUBMITTED: "sad",
+}
+
 function SubmissionResultPanel({ result }: { result: SubmissionResult }) {
   const { t } = useI18n()
   const { title, description } = t.submit.outcomes[result.outcome]
@@ -152,7 +160,7 @@ function SubmissionResultPanel({ result }: { result: SubmissionResult }) {
       <CardContent className="space-y-5">
         <div className="flex items-start gap-4">
           <TileCharacter
-            mood={result.outcome === "ALREADY_SUBMITTED" ? "confused" : "happy"}
+            mood={outcomeMoods[result.outcome]}
             className="w-14 shrink-0"
           />
           <div className="flex-1 space-y-1">

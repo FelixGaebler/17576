@@ -116,19 +116,19 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
     expect(progressAfter.duplicates).toBe(1)
   })
 
-  test("a user can score an acronym only once, whatever the meaning", async () => {
+  test("a user can score each meaning only once", async () => {
     await submitAcronym(felix, { acronym: "ABC", meaning: "Application Business Controller" })
 
-    const sameMeaning = await submitAcronym(felix, { acronym: "ABC", meaning: "Application Business Controller" })
+    const sameMeaning = await submitAcronym(felix, { acronym: "abc", meaning: "application  business controller" })
     const newMeaning = await submitAcronym(felix, { acronym: "ABC", meaning: "Automated Booking Component" })
 
     expect(sameMeaning).toMatchObject({ outcome: "ALREADY_SUBMITTED", awardedPoints: 0 })
-    expect(newMeaning).toMatchObject({ outcome: "ALREADY_SUBMITTED", awardedPoints: 0 })
-    expect(await countRows()).toEqual({ acronyms: 1, meanings: 1, transactions: 1 })
-    expect(await scoreOf(felix)).toBe(5)
+    expect(newMeaning).toMatchObject({ outcome: "DUPLICATE_FOUND", awardedPoints: 10 })
+    expect(await countRows()).toEqual({ acronyms: 1, meanings: 2, transactions: 2 })
+    expect(await scoreOf(felix)).toBe(15)
 
-    const otherUser = await submitAcronym(anna, { acronym: "ABC", meaning: "Automated Booking Component" })
-    expect(otherUser.outcome).toBe("DUPLICATE_FOUND")
+    const otherUser = await submitAcronym(anna, { acronym: "ABC", meaning: "Application Business Controller" })
+    expect(otherUser.outcome).toBe("EXISTING_ENTRY")
   })
 
   test("invalid input cannot generate points", async () => {
@@ -162,7 +162,7 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
     await submitAcronym(anna, { acronym: "POS", meaning: "Purchase Order System" })
 
     expect(await scoreOf(felix)).toBe(15)
-    expect(await scoreOf(anna)).toBe(6)
+    expect(await scoreOf(anna)).toBe(16)
     await expectScoreMatchesTransactions(felix)
     await expectScoreMatchesTransactions(anna)
   })
@@ -185,7 +185,7 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
       await expect(db.orm.public.Meaning.create({ ...meaning, text: "alpha beta charlie" })).rejects.toThrow()
     })
 
-    test("a user has at most one transaction per acronym", async () => {
+    test("a user has at most one transaction per meaning", async () => {
       await submitAcronym(felix, { acronym: "ABC", meaning: "Alpha Beta Charlie" })
       const transaction = await db.orm.public.ScoreTransaction.first()
       if (!transaction) throw new Error("Expected a score transaction")
@@ -226,16 +226,26 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
 
     test("a rejected concurrent submission leaves no partial glossary records", async () => {
       await submitAcronym(anna, { acronym: "ABC", meaning: "Application Business Controller" })
+      const submission = { acronym: "ABC", meaning: "Automated Booking Component" }
 
-      const results = await Promise.all([
-        submitAcronym(felix, { acronym: "ABC", meaning: "Automated Booking Component" }),
-        submitAcronym(felix, { acronym: "ABC", meaning: "Activity Based Costing" }),
-      ])
+      const results = await Promise.all([submitAcronym(felix, submission), submitAcronym(felix, submission)])
 
       expect(results.map((r) => r.outcome).sort()).toEqual(["ALREADY_SUBMITTED", "DUPLICATE_FOUND"])
       // The losing request had already inserted its meaning; it must have been rolled back.
       expect(await countRows()).toEqual({ acronyms: 1, meanings: 2, transactions: 2 })
       expect(await scoreOf(felix)).toBe(10)
+    })
+
+    test("two users adding the same new meaning create it only once", async () => {
+      await submitAcronym(anna, { acronym: "ABC", meaning: "Application Business Controller" })
+      const submission = { acronym: "ABC", meaning: "Automated Booking Component" }
+
+      const results = await Promise.all([submitAcronym(felix, submission), submitAcronym(anna, submission)])
+
+      expect(results.map((r) => r.outcome).sort()).toEqual(["DUPLICATE_FOUND", "EXISTING_ENTRY"])
+      expect(await countRows()).toEqual({ acronyms: 1, meanings: 2, transactions: 3 })
+      await expectScoreMatchesTransactions(felix)
+      await expectScoreMatchesTransactions(anna)
     })
   })
 })

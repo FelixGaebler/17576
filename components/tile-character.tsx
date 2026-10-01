@@ -1,15 +1,17 @@
 import { cn } from "@/lib/utils"
 
-type Mood = "happy" | "confused" | "sad"
+type Mood = "happy" | "excited" | "confused" | "sad"
 
 const arms: Record<Mood, string> = {
   happy: "M22 78 q-12 8 -12 22 M98 70 q16 -6 18 -28",
+  excited: "M22 70 q-14 -6 -16 -28 M98 70 q14 -6 16 -28",
   confused: "M22 72 q-14 -2 -16 -18 M98 72 q14 -2 16 -18",
   sad: "M22 76 q-10 10 -8 26 M98 76 q10 10 8 26",
 }
 
 const mouths: Record<Mood, string> = {
   happy: "M50 96 q10 9 20 0",
+  excited: "M48 92 q12 14 24 0 z",
   confused: "M50 98 q5 -5 10 0 t10 0",
   sad: "M50 100 q10 -8 20 0",
 }
@@ -18,7 +20,7 @@ const mouths: Record<Mood, string> = {
 export function TileCharacter({ mood, className }: { mood: Mood; className?: string }) {
   return (
     <svg
-      viewBox="0 0 120 140"
+      viewBox="-4 -2 136 140"
       aria-hidden
       className={cn("fill-none stroke-foreground", className)}
       strokeWidth={4}
@@ -31,13 +33,14 @@ export function TileCharacter({ mood, className }: { mood: Mood; className?: str
       <rect x="32" y="40" width="56" height="18" rx="9" className="fill-background/60 stroke-none" />
       <circle cx="47" cy="78" r="4.5" className="fill-foreground stroke-none" />
       <circle cx="73" cy="78" r="4.5" className="fill-foreground stroke-none" />
-      <path d={mouths[mood]} />
+      <path d={mouths[mood]} className={cn(mood === "excited" && "fill-foreground")} />
       {mood === "confused" && (
         <text x="108" y="26" className="fill-muted-foreground stroke-none text-[28px] font-bold">
           ?
         </text>
       )}
       {mood === "happy" && <path d="M110 18 l4 -6 M118 28 l7 -2 M104 12 l-1 -7" className="stroke-primary" />}
+      {mood === "excited" && <path d="M8 22 l4 -6 M116 22 l-4 -6 M60 6 v-6" className="stroke-primary" />}
     </svg>
   )
 }

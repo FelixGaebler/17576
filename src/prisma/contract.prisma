@@ -58,6 +58,6 @@ model ScoreTransaction {
   type      ScoreTransactionType
   createdAt DateTime             @default(now())
 
-  // A user can score each acronym only once, regardless of the meaning.
-  @@unique([userId, acronymId])
+  // A user can score each meaning only once.
+  @@unique([userId, meaningId])
 }

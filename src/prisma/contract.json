@@ -821,7 +821,7 @@
                 {
                   "columns": [
                     "userId",
-                    "acronymId"
+                    "meaningId"
                   ]
                 }
               ]
@@ -917,7 +917,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cca0ba04d7fca33f67d5f0443a2fe0cb49a3f02e5da2582f7d000221caac53ae"
+    "storageHash": "197ed6994fec40dc71fc7b78286b767a941d98968c09f8eccf0ea613449b3bc5"
   },
   "execution": {
     "executionHash": "55f78da71c5b7afd206c7ce234f1e897d12f191efcda20d62e51af03ce54baeb",

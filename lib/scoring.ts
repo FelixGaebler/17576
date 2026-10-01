@@ -64,22 +64,22 @@ function recordSubmission(
   return getDb().transaction(async (tx): Promise<SubmissionOutcome> => {
     const existingAcronym = await tx.orm.public.Acronym.where({ code }).first()
 
-    if (existingAcronym) {
-      const hasUserSubmittedAcronym =
-        (await tx.orm.public.ScoreTransaction.where({
-          userId,
-          acronymId: existingAcronym.id,
-        }).first()) !== null
-
-      if (hasUserSubmittedAcronym) return "ALREADY_SUBMITTED"
-    }
-
     const existingMeaning = existingAcronym
       ? await tx.orm.public.Meaning.where({
         acronymId: existingAcronym.id,
         normalizedText,
       }).first()
       : null
+
+    if (existingMeaning) {
+      const hasUserSubmittedMeaning =
+        (await tx.orm.public.ScoreTransaction.where({
+          userId,
+          meaningId: existingMeaning.id,
+        }).first()) !== null
+
+      if (hasUserSubmittedMeaning) return "ALREADY_SUBMITTED"
+    }
 
     let type: ScoreTransactionType
     if (!existingAcronym) type = "NEW_ACRONYM"

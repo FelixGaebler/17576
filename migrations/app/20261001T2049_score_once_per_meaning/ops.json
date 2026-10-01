@@ -1,0 +1,86 @@
+[
+  {
+    "id": "dropConstraint.scoreTransaction.scoreTransaction_userId_acronymId_key",
+    "label": "Drop constraint \"scoreTransaction_userId_acronymId_key\" on \"scoreTransaction\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "scoreTransaction_userId_acronymId_key",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_userId_acronymId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_acronymId_key",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"scoreTransaction_userId_acronymId_key\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" DROP CONSTRAINT \"scoreTransaction_userId_acronymId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_userId_acronymId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_acronymId_key",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.scoreTransaction.scoreTransaction_userId_meaningId_key",
+    "label": "Add unique constraint on \"scoreTransaction\" (userId, meaningId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "scoreTransaction_userId_meaningId_key",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_userId_meaningId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_meaningId_key",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"scoreTransaction_userId_meaningId_key\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ADD CONSTRAINT \"scoreTransaction_userId_meaningId_key\" UNIQUE (\"userId\", \"meaningId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_userId_meaningId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_meaningId_key",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  }
+]

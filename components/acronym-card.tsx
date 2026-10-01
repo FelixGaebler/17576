@@ -34,7 +34,7 @@ export function AcronymCard({ code, meanings, highlight }: AcronymCardProps) {
                 className={cn(
                   "font-medium",
                   meaning.text.toLowerCase() === highlighted &&
-                    "underline decoration-primary decoration-3 underline-offset-4",
+                  "underline decoration-primary decoration-3 underline-offset-4",
                 )}
               >
                 {meaning.text}
