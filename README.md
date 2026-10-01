@@ -199,6 +199,7 @@ src/prisma/seed.ts          Example data
 migrations/                 Database migrations
 Dockerfile                  App image (slim) and migration image (--target migrate)
 helm/                       Helm chart for Kubernetes
+.github/workflows/          Docker images and Helm chart (build, publish on tags)
 ```
 
 ### Data model
@@ -474,6 +475,37 @@ helm install twentysix-cubed ./helm \
 
 See [`helm/values.yaml`](helm/values.yaml) for all options.
 
+### Releases (GitHub Actions)
+
+Two workflows in [`.github/workflows`](.github/workflows) build and publish
+everything to the GitHub Container Registry:
+
+| Workflow                                         | Pull request              | Push to `main`                          | Tag `v1.2.3`                                  |
+| ------------------------------------------------ | ------------------------- | --------------------------------------- | --------------------------------------------- |
+| [`docker.yml`](.github/workflows/docker.yml)     | builds both images        | pushes `:main` and `:sha-…`             | pushes `:1.2.3` and `:1.2`                    |
+| [`helm.yml`](.github/workflows/helm.yml)         | lints and renders chart   | lints and renders chart                 | publishes chart `1.2.3` (appVersion `1.2.3`)  |
+
+Images are built for `linux/amd64` and `linux/arm64`. To release, tag a
+commit and push the tag:
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+The chart's default image tag is its own version, so a released chart always
+runs the images of the same release:
+
+| Artifact        | Location                                            |
+| --------------- | --------------------------------------------------- |
+| App image       | `ghcr.io/felixgaebler/twentysix-cubed`              |
+| Migration image | `ghcr.io/felixgaebler/twentysix-cubed-migrate`      |
+| Helm chart      | `oci://ghcr.io/felixgaebler/charts/twentysix-cubed` |
+
+```bash
+helm install twentysix-cubed oci://ghcr.io/felixgaebler/charts/twentysix-cubed --version 0.1.0 \
+  --set ingress.enabled=true --set ingress.hosts[0].host=acronyms.example.com
+```
+
 ### Prisma Compute
 
 The repository also contains a ready-made setup for
@@ -485,6 +517,23 @@ Postgres, apply migrations and deploy on every push. Connect it once with:
 bun run compute:login
 bun run compute:connect
 ```
+
+## Design decisions and technical debt
+
+Decisions that trade something off, written down so they can be revisited
+deliberately instead of rediscovered.
+
+| Decision | Why | Cost / debt | Revisit when |
+| --- | --- | --- | --- |
+| **Multi-arch images** (`linux/amd64` + `linux/arm64`), arm64 emulated with QEMU on standard GitHub runners | Runs on ARM servers (AWS Graviton, Azure Cobalt, Hetzner CAX) and Apple Silicon without rebuilding | Image builds take several times longer than amd64 alone | Build times hurt: switch to native `ubuntu-24.04-arm` runners and merge the manifests |
+| **Separate migration image** with the full Prisma CLI | The runtime image stays slim (~430 MB, standalone server only) | The migration image is ~2.9 GB, because the Prisma CLI needs all dependencies | Prisma ships a standalone migration binary |
+| **Prisma 8 release candidate** | Contract-first data layer, typed queries, no code generation | Pre-release APIs may change before 8.0 | Prisma 8.0 is stable |
+| **Temporal polyfill** (`temporal-polyfill`) | Prisma 8 date fields use the `Temporal` API, which Node.js 24 doesn't ship | One extra runtime dependency | Node.js ships `Temporal` |
+| **Cached score on `User`** | The scoreboard is a single cheap query | Denormalized; kept consistent by incrementing in SQL inside the same transaction as the score transaction | Scoring rules become retroactive |
+| **Stateless sessions** (encrypted cookie, 7 days, no refresh against the provider) | No session store, no extra infrastructure | A user disabled at the identity provider keeps access until the cookie expires | Offboarding must take effect immediately: shorter lifetime or refresh tokens |
+| **`email` is unique and required** | Simple user model | Users without an `email` claim get a placeholder address; an email already used by another account makes sign-in fail | Several identity providers per instance |
+| **New meanings earn the most points (+10)** | Finding ambiguity is the core of the game | Easy to farm with made-up meanings that match the initials | Moderation (see [Ideas](#ideas)) |
+| **Scoring tests need a real PostgreSQL** | Constraints, transactions and races can't be mocked meaningfully | They are skipped unless `TEST_DATABASE_URL` is set and don't run in CI yet | A Postgres service container is added to CI |
 
 ## Ideas
 
