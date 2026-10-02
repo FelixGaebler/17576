@@ -487,7 +487,7 @@ everything to the GitHub Container Registry:
 | Workflow                                         | Pull request              | Push to `main`                          | Tag `v1.2.3`                                  |
 | ------------------------------------------------ | ------------------------- | --------------------------------------- | --------------------------------------------- |
 | [`docker.yml`](.github/workflows/docker.yml)     | builds both images        | pushes `:main` and `:sha-…`             | pushes `:1.2.3` and `:1.2`                    |
-| [`helm.yml`](.github/workflows/helm.yml)         | lints and renders chart   | lints and renders chart                 | publishes chart `1.2.3` (appVersion `1.2.3`)  |
+| [`helm.yml`](.github/workflows/helm.yml)         | lints, packages chart as workflow artifact | pushes chart `<version>-dev.<sha>` (appVersion `sha-…`) | pushes chart `1.2.3` (appVersion `1.2.3`) and attaches it to the GitHub release |
 
 Images are built for `linux/amd64` and `linux/arm64`. To release, tag a
 commit and push the tag:

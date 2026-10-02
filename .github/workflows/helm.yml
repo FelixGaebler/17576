@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   lint:
@@ -28,23 +27,48 @@ jobs:
           helm template twentysix-cubed helm > /dev/null
           helm template twentysix-cubed helm --set oidc.enabled=true --set ingress.enabled=true > /dev/null
 
-  publish:
-    # Releases only: tag v1.2.3 publishes chart 1.2.3 with appVersion 1.2.3,
-    # which points at the Docker images built for the same tag.
-    if: startsWith(github.ref, 'refs/tags/v')
+  package:
     needs: lint
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v7
 
       - uses: azure/setup-helm@v5
 
+      # Tag v1.2.3 → chart 1.2.3 / appVersion 1.2.3; otherwise a prerelease chart
+      # pointing at the sha-… image tag built by docker.yml for the same commit.
       - name: Package
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          helm package helm --version "$VERSION" --app-version "$VERSION" --destination dist
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            APP_VERSION="$VERSION"
+          else
+            SHA="${GITHUB_SHA::7}"
+            VERSION="$(helm show chart helm | awk '/^version:/ {print $2}')-dev.${SHA}"
+            APP_VERSION="sha-${SHA}"
+          fi
+          helm package helm --version "$VERSION" --app-version "$APP_VERSION" --destination dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: helm-chart
+          path: dist/*.tgz
+          if-no-files-found: error
 
       - name: Push to GitHub Container Registry
+        if: github.event_name != 'pull_request'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
           helm push dist/*.tgz "oci://ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/charts"
+
+      - name: Attach to GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
+          gh release upload "$GITHUB_REF_NAME" dist/*.tgz --clobber
