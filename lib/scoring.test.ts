@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, test } from "bun:test"
 
 import { getDb } from "@/src/prisma/db"
 import { getGlossaryProgress } from "./glossary"
-import { submitAcronym } from "./scoring"
+import { invalidateMeaning, submitAcronym } from "./scoring"
 import type { Submission } from "./validation"
 
 // These tests write to a real database and wipe it before every test, so they
@@ -165,6 +165,57 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
     expect(await scoreOf(anna)).toBe(16)
     await expectScoreMatchesTransactions(felix)
     await expectScoreMatchesTransactions(anna)
+  })
+
+  describe("invalidateMeaning", () => {
+    async function meaningId(text: string) {
+      const meaning = await db.orm.public.Meaning.where({ text }).first()
+      if (!meaning) throw new Error(`Expected meaning ${text}`)
+      return meaning.id
+    }
+
+    test("deletes the meaning and takes back everybody's points", async () => {
+      await submitAcronym(anna, { acronym: "ABC", meaning: "Application Business Controller" })
+      await submitAcronym(felix, { acronym: "ABC", meaning: "Automated Booking Component" })
+      await submitAcronym(anna, { acronym: "ABC", meaning: "Automated Booking Component" })
+
+      expect(await invalidateMeaning(await meaningId("Automated Booking Component"))).toBe(true)
+
+      expect(await scoreOf(felix)).toBe(0)
+      expect(await scoreOf(anna)).toBe(5)
+      await expectScoreMatchesTransactions(felix)
+      await expectScoreMatchesTransactions(anna)
+      // Both original transactions stay in the history, each with a negative counterpart.
+      expect(await countRows()).toEqual({ acronyms: 1, meanings: 1, transactions: 5 })
+      expect((await getGlossaryProgress()).duplicates).toBe(0)
+    })
+
+    test("deletes the acronym with its last meaning", async () => {
+      await submitAcronym(felix, { acronym: "XYZ", meaning: "Xylophone Yield Zone" })
+
+      await invalidateMeaning(await meaningId("Xylophone Yield Zone"))
+
+      expect(await countRows()).toEqual({ acronyms: 0, meanings: 0, transactions: 2 })
+      expect(await scoreOf(felix)).toBe(0)
+    })
+
+    test("an invalidated meaning can't be submitted again", async () => {
+      await submitAcronym(felix, { acronym: "XYZ", meaning: "Xylophone Yield Zone" })
+      await invalidateMeaning(await meaningId("Xylophone Yield Zone"))
+
+      const again = await submitAcronym(felix, { acronym: "xyz", meaning: "  Xylophone  Yield Zone" })
+      const otherUser = await submitAcronym(anna, { acronym: "XYZ", meaning: "Xylophone Yield Zone" })
+      const otherMeaning = await submitAcronym(anna, { acronym: "XYZ", meaning: "Xenon Yellow Zinc" })
+
+      expect(again).toMatchObject({ outcome: "INVALIDATED_MEANING", awardedPoints: 0 })
+      expect(otherUser).toMatchObject({ outcome: "INVALIDATED_MEANING", awardedPoints: 0 })
+      expect(otherMeaning.outcome).toBe("NEW_ACRONYM")
+      expect(await scoreOf(felix)).toBe(0)
+    })
+
+    test("returns false for an unknown meaning", async () => {
+      expect(await invalidateMeaning(crypto.randomUUID())).toBe(false)
+    })
   })
 
   describe("database constraints", () => {

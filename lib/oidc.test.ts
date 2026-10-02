@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 
-import { safeReturnTo } from "./oidc"
+import { isAdminGroupMember, safeReturnTo } from "./oidc"
 import { seal, unseal } from "./session"
 
 process.env.SESSION_SECRET ??= "test-secret-that-is-at-least-32-characters"
@@ -14,6 +14,19 @@ describe("safeReturnTo", () => {
     "falls back to / for %p",
     (path) => {
       expect(safeReturnTo(path)).toBe("/")
+    },
+  )
+})
+
+describe("isAdminGroupMember", () => {
+  test.each([["twentysix_admin"], ["users", "/twentysix_admin"]])("accepts the groups %p", (...groups) => {
+    expect(isAdminGroupMember({ groups })).toBe(true)
+  })
+
+  test.each([{}, { groups: "twentysix_admin" }, { groups: ["users"] }, { groups: ["/parent/twentysix_admin"] }])(
+    "rejects the claims %p",
+    (claims) => {
+      expect(isAdminGroupMember(claims)).toBe(false)
     },
   )
 })

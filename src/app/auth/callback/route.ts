@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import { upsertOidcUser } from "@/lib/auth"
-import { appUrl, completeLogin, cookieOptions, LOGIN_COOKIE, type LoginState } from "@/lib/oidc"
+import { appUrl, completeLogin, cookieOptions, isAdminGroupMember, LOGIN_COOKIE, type LoginState } from "@/lib/oidc"
 import { seal, SESSION_COOKIE, SESSION_MAX_AGE, unseal, type Session } from "@/lib/session"
 
 export async function GET(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   let session: Session
   try {
     const claims = await completeLogin(callbackUrl, login)
-    session = { userId: await upsertOidcUser(claims) }
+    session = { userId: await upsertOidcUser(claims), isAdmin: isAdminGroupMember(claims) }
   } catch (error) {
     console.error("OIDC login failed", error)
     return new NextResponse("Sign-in failed. Please try again.", { status: 401 })

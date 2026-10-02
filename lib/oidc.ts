@@ -14,6 +14,15 @@ export function isOidcEnabled() {
   return Boolean(process.env.OIDC_ISSUER)
 }
 
+/** Whether the ID token lists the admin group in its `groups` claim (Authentik, Keycloak group mapper). */
+export function isAdminGroupMember(claims: Record<string, unknown>) {
+  const adminGroup = process.env.OIDC_ADMIN_GROUP || "twentysix_admin"
+  const groups = claims.groups
+  if (!Array.isArray(groups)) return false
+  // Keycloak sends full group paths ("/twentysix_admin") unless "Full group path" is turned off.
+  return groups.some((group) => typeof group === "string" && group.replace(/^\//, "") === adminGroup)
+}
+
 function getSettings() {
   const issuer = process.env.OIDC_ISSUER
   const clientId = process.env.OIDC_CLIENT_ID

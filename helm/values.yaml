@@ -29,6 +29,8 @@ oidc:
   issuer: https://keycloak.example.com/realms/company
   clientId: twentysix-cubed
   scopes: openid profile email
+  # Members of this group (from the `groups` claim) can invalidate meanings.
+  adminGroup: twentysix_admin
   # Public URL of the app; the redirect URI is <appUrl>/auth/callback.
   appUrl: https://acronyms.example.com
   existingSecret: twentysix-cubed-oidc

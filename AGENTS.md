@@ -41,7 +41,8 @@ docker stop acronyms-test-db
 
 ```text
 src/app/                 Pages (App Router). Server Components by default.
-src/app/submit/actions.ts  The only server action (submissions)
+src/app/submit/actions.ts  Server action for submissions
+src/app/search/actions.ts  Server action to invalidate a meaning (admins)
 src/app/auth/            OIDC login, callback, logout route handlers
 src/proxy.ts             Next 16 "proxy" (formerly middleware): optimistic session check
 components/              App components; components/ui/ = shadcn/ui (generated)
@@ -70,7 +71,10 @@ Path alias `@/*` maps to the repo root (`@/lib/...`, `@/components/...`,
 - **The server decides.** Clients send only `acronym` and `meaning`; outcome and
   points are computed in `submitAcronym()`. Never accept points/type from input.
 - **Business outcomes are values, not exceptions** (`NEW_ACRONYM`,
-  `EXISTING_ENTRY`, `DUPLICATE_FOUND`, `ALREADY_SUBMITTED`).
+  `EXISTING_ENTRY`, `DUPLICATE_FOUND`, `ALREADY_SUBMITTED`, `INVALIDATED_MEANING`).
+- **Admins** are members of `OIDC_ADMIN_GROUP` (`groups` claim, read at sign-in,
+  `getCurrentUser().isAdmin`). `invalidateMeaning()` deletes a meaning and adds
+  negative `INVALIDATED_MEANING` transactions; those also block resubmission.
 - **Scoring rules** (see README "How the game works"): +5 new acronym, +10 new
   meaning of a known acronym, +1 known acronym and meaning, 0 if the same user
   already submitted that meaning. Uniqueness is per **user + meaning**.

@@ -1,0 +1,293 @@
+[
+  {
+    "id": "dropTable.invalidatedMeaning",
+    "label": "Drop table \"invalidatedMeaning\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "invalidatedMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"invalidatedMeaning\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"invalidatedMeaning\"",
+        "sql": "DROP TABLE \"public\".\"invalidatedMeaning\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"invalidatedMeaning\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.scoreTransaction.scoreTransaction_type_check_34d44838",
+    "label": "Drop check constraint \"scoreTransaction_type_check_34d44838\" on \"scoreTransaction\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "scoreTransaction_type_check_34d44838",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_type_check_34d44838\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_type_check_34d44838",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"scoreTransaction_type_check_34d44838\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" DROP CONSTRAINT \"scoreTransaction_type_check_34d44838\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_type_check_34d44838\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_type_check_34d44838",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.scoreTransaction.acronymCode",
+    "label": "Add column \"acronymCode\" to \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "acronymCode",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"acronymCode\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "acronymCode"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"acronymCode\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ADD COLUMN \"acronymCode\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"acronymCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "acronymCode"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.scoreTransaction.meaningText",
+    "label": "Add column \"meaningText\" to \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "meaningText",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"meaningText\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "meaningText"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"meaningText\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ADD COLUMN \"meaningText\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"meaningText\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "meaningText"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.dropNotNull.scoreTransaction.acronymId",
+    "label": "Drop NOT NULL on \"scoreTransaction\".\"acronymId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "acronymId",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"acronymId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "acronymId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop NOT NULL on \"acronymId\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"acronymId\" DROP NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"acronymId\" is nullable",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "acronymId",
+          "YES"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.dropNotNull.scoreTransaction.meaningId",
+    "label": "Drop NOT NULL on \"scoreTransaction\".\"meaningId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "meaningId",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"meaningId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "meaningId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop NOT NULL on \"meaningId\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"meaningId\" DROP NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"meaningId\" is nullable",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "meaningId",
+          "YES"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.scoreTransaction.scoreTransaction_type_check_2d5357a4",
+    "label": "Add check constraint \"scoreTransaction_type_check_2d5357a4\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "scoreTransaction_type_check_2d5357a4",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_type_check_2d5357a4\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_type_check_2d5357a4",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"scoreTransaction_type_check_2d5357a4\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ADD CONSTRAINT \"scoreTransaction_type_check_2d5357a4\" CHECK (\"type\" IN ('NEW_ACRONYM', 'EXISTING_ENTRY', 'DUPLICATE_FOUND', 'INVALIDATED_MEANING'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_type_check_2d5357a4\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_type_check_2d5357a4",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  }
+]

@@ -33,9 +33,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8967b09db61ac6072ec112ac038d165c75bd75e493d4a3ede43ca2df85f53e51'>;
+  StorageHashBase<'806b38ad7fc82ac0def3b4932c123739136a7636514f8d996c25f11def2af476'>;
 export type ExecutionHash =
-  ExecutionHashBase<'a933b4d7b98793fb11fdd51dea6b8b046b7e09a136e37f1509e807dc08b17849'>;
+  ExecutionHashBase<'3e9dfc891a1fe11bee82cb55501fc68463edb9d66a7a26009ca4446a6f5cadd8'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -248,6 +248,14 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly InvalidatedMeaning: {
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly acronymCode: CodecTypes['pg/text@1']['output'];
+      readonly text: CodecTypes['pg/text@1']['output'];
+      readonly normalizedText: CodecTypes['pg/text@1']['output'];
+      readonly invalidatedByUserId: CodecTypes['pg/uuid@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly Meaning: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly acronymId: CodecTypes['pg/uuid@1']['output'];
@@ -260,12 +268,10 @@ export type FieldOutputTypes = {
     readonly ScoreTransaction: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
-      readonly acronymId: CodecTypes['pg/uuid@1']['output'] | null;
-      readonly meaningId: CodecTypes['pg/uuid@1']['output'] | null;
-      readonly acronymCode: CodecTypes['pg/text@1']['output'] | null;
-      readonly meaningText: CodecTypes['pg/text@1']['output'] | null;
+      readonly acronymId: CodecTypes['pg/uuid@1']['output'];
+      readonly meaningId: CodecTypes['pg/uuid@1']['output'];
       readonly amount: CodecTypes['pg/int4@1']['output'];
-      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND' | 'INVALIDATED_MEANING';
+      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND';
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
@@ -289,6 +295,14 @@ export type FieldInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly InvalidatedMeaning: {
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly acronymCode: CodecTypes['pg/text@1']['input'];
+      readonly text: CodecTypes['pg/text@1']['input'];
+      readonly normalizedText: CodecTypes['pg/text@1']['input'];
+      readonly invalidatedByUserId: CodecTypes['pg/uuid@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly Meaning: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly acronymId: CodecTypes['pg/uuid@1']['input'];
@@ -301,12 +315,10 @@ export type FieldInputTypes = {
     readonly ScoreTransaction: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
-      readonly acronymId: CodecTypes['pg/uuid@1']['input'] | null;
-      readonly meaningId: CodecTypes['pg/uuid@1']['input'] | null;
-      readonly acronymCode: CodecTypes['pg/text@1']['input'] | null;
-      readonly meaningText: CodecTypes['pg/text@1']['input'] | null;
+      readonly acronymId: CodecTypes['pg/uuid@1']['input'];
+      readonly meaningId: CodecTypes['pg/uuid@1']['input'];
       readonly amount: CodecTypes['pg/int4@1']['input'];
-      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND' | 'INVALIDATED_MEANING';
+      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND';
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
@@ -330,6 +342,14 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly invalidatedMeaning: {
+      readonly acronymCode: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly invalidatedByUserId: CodecTypes['pg/uuid@1']['output'];
+      readonly normalizedText: CodecTypes['pg/text@1']['output'];
+      readonly text: CodecTypes['pg/text@1']['output'];
+    };
     readonly meaning: {
       readonly acronymId: CodecTypes['pg/uuid@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -340,14 +360,12 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly scoreTransaction: {
-      readonly acronymCode: CodecTypes['pg/text@1']['output'] | null;
-      readonly acronymId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly acronymId: CodecTypes['pg/uuid@1']['output'];
       readonly amount: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly meaningId: CodecTypes['pg/uuid@1']['output'] | null;
-      readonly meaningText: CodecTypes['pg/text@1']['output'] | null;
-      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND' | 'INVALIDATED_MEANING';
+      readonly meaningId: CodecTypes['pg/uuid@1']['output'];
+      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND';
       readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
     readonly user: {
@@ -371,6 +389,14 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly invalidatedMeaning: {
+      readonly acronymCode: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly invalidatedByUserId: CodecTypes['pg/uuid@1']['input'];
+      readonly normalizedText: CodecTypes['pg/text@1']['input'];
+      readonly text: CodecTypes['pg/text@1']['input'];
+    };
     readonly meaning: {
       readonly acronymId: CodecTypes['pg/uuid@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -381,14 +407,12 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly scoreTransaction: {
-      readonly acronymCode: CodecTypes['pg/text@1']['input'] | null;
-      readonly acronymId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly acronymId: CodecTypes['pg/uuid@1']['input'];
       readonly amount: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly meaningId: CodecTypes['pg/uuid@1']['input'] | null;
-      readonly meaningText: CodecTypes['pg/text@1']['input'] | null;
-      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND' | 'INVALIDATED_MEANING';
+      readonly meaningId: CodecTypes['pg/uuid@1']['input'];
+      readonly type: 'NEW_ACRONYM' | 'EXISTING_ENTRY' | 'DUPLICATE_FOUND';
       readonly userId: CodecTypes['pg/uuid@1']['input'];
     };
     readonly user: {
@@ -466,6 +490,65 @@ type ContractBase = Omit<
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'acronym';
                     readonly columns: readonly ['createdByUserId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly invalidatedMeaning: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly acronymCode: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly text: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly normalizedText: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly invalidatedByUserId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['acronymCode', 'normalizedText'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'invalidatedMeaning_invalidatedByUserId_idx_63040bb1';
+                  readonly prefix: 'invalidatedMeaning_invalidatedByUserId_idx';
+                  readonly columns: readonly ['invalidatedByUserId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'invalidatedMeaning';
+                    readonly columns: readonly ['invalidatedByUserId'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
@@ -572,22 +655,12 @@ type ContractBase = Omit<
                 readonly acronymId: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
-                  readonly nullable: true;
+                  readonly nullable: false;
                 };
                 readonly meaningId: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
-                  readonly nullable: true;
-                };
-                readonly acronymCode: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly meaningText: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
+                  readonly nullable: false;
                 };
                 readonly amount: {
                   readonly nativeType: 'int4';
@@ -727,12 +800,7 @@ type ContractBase = Omit<
           readonly valueSet: {
             readonly ScoreTransactionType: {
               readonly kind: 'valueSet';
-              readonly values: readonly [
-                'NEW_ACRONYM',
-                'EXISTING_ENTRY',
-                'DUPLICATE_FOUND',
-                'INVALIDATED_MEANING',
-              ];
+              readonly values: readonly ['NEW_ACRONYM', 'EXISTING_ENTRY', 'DUPLICATE_FOUND'];
             };
           };
         };
@@ -751,6 +819,10 @@ type ContractBase = Omit<
     readonly scoreTransaction: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ScoreTransaction';
+    };
+    readonly invalidatedMeaning: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'InvalidatedMeaning';
     };
   };
   readonly domain: {
@@ -816,6 +888,59 @@ type ContractBase = Omit<
                 readonly createdByUserId: { readonly column: 'createdByUserId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly InvalidatedMeaning: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly acronymCode: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly text: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly normalizedText: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly invalidatedByUserId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly invalidatedBy: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly on: {
+                  readonly localFields: readonly ['invalidatedByUserId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'invalidatedMeaning';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly acronymCode: { readonly column: 'acronymCode' };
+                readonly text: { readonly column: 'text' };
+                readonly normalizedText: { readonly column: 'normalizedText' };
+                readonly invalidatedByUserId: { readonly column: 'invalidatedByUserId' };
+                readonly createdAt: { readonly column: 'createdAt' };
               };
             };
           };
@@ -902,20 +1027,12 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
               readonly acronymId: {
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
               readonly meaningId: {
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-              readonly acronymCode: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly meaningText: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly amount: {
                 readonly nullable: false;
@@ -973,8 +1090,6 @@ type ContractBase = Omit<
                 readonly userId: { readonly column: 'userId' };
                 readonly acronymId: { readonly column: 'acronymId' };
                 readonly meaningId: { readonly column: 'meaningId' };
-                readonly acronymCode: { readonly column: 'acronymCode' };
-                readonly meaningText: { readonly column: 'meaningText' };
                 readonly amount: { readonly column: 'amount' };
                 readonly type: { readonly column: 'type' };
                 readonly createdAt: { readonly column: 'createdAt' };
@@ -1046,7 +1161,6 @@ type ContractBase = Omit<
               { readonly name: 'NEW_ACRONYM'; readonly value: 'NEW_ACRONYM' },
               { readonly name: 'EXISTING_ENTRY'; readonly value: 'EXISTING_ENTRY' },
               { readonly name: 'DUPLICATE_FOUND'; readonly value: 'DUPLICATE_FOUND' },
-              { readonly name: 'INVALIDATED_MEANING'; readonly value: 'INVALIDATED_MEANING' },
             ];
           };
         };
@@ -1092,6 +1206,14 @@ type ContractBase = Omit<
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'instantNow' };
           readonly onUpdate: { readonly kind: 'generator'; readonly id: 'instantNow' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'invalidatedMeaning';
+            readonly column: 'id';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv7' };
         },
         {
           readonly ref: {

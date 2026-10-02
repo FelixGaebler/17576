@@ -39,6 +39,10 @@
               {
                 "name": "DUPLICATE_FOUND",
                 "value": "DUPLICATE_FOUND"
+              },
+              {
+                "name": "INVALIDATED_MEANING",
+                "value": "INVALIDATED_MEANING"
               }
             ]
           }
@@ -250,8 +254,15 @@
           },
           "ScoreTransaction": {
             "fields": {
+              "acronymCode": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "acronymId": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
@@ -279,9 +290,16 @@
                 }
               },
               "meaningId": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "meaningText": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -355,6 +373,9 @@
             },
             "storage": {
               "fields": {
+                "acronymCode": {
+                  "column": "acronymCode"
+                },
                 "acronymId": {
                   "column": "acronymId"
                 },
@@ -369,6 +390,9 @@
                 },
                 "meaningId": {
                   "column": "meaningId"
+                },
+                "meaningText": {
+                  "column": "meaningText"
                 },
                 "type": {
                   "column": "type"
@@ -672,16 +696,21 @@
             "scoreTransaction": {
               "checks": [
                 {
-                  "expression": "\"type\" IN ('NEW_ACRONYM', 'EXISTING_ENTRY', 'DUPLICATE_FOUND')",
-                  "name": "scoreTransaction_type_check_34d44838",
+                  "expression": "\"type\" IN ('NEW_ACRONYM', 'EXISTING_ENTRY', 'DUPLICATE_FOUND', 'INVALIDATED_MEANING')",
+                  "name": "scoreTransaction_type_check_2d5357a4",
                   "prefix": "scoreTransaction_type_check"
                 }
               ],
               "columns": {
+                "acronymCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "acronymId": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
-                  "nullable": false
+                  "nullable": true
                 },
                 "amount": {
                   "codecId": "pg/int4@1",
@@ -705,7 +734,12 @@
                 "meaningId": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
-                  "nullable": false
+                  "nullable": true
+                },
+                "meaningText": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "type": {
                   "codecId": "pg/text@1",
@@ -892,7 +926,8 @@
               "values": [
                 "NEW_ACRONYM",
                 "EXISTING_ENTRY",
-                "DUPLICATE_FOUND"
+                "DUPLICATE_FOUND",
+                "INVALIDATED_MEANING"
               ]
             }
           }
@@ -901,7 +936,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "b9451fe36cff4905af757eb575862a653997fe86b92729f714fd839bf78525fc"
+    "storageHash": "8967b09db61ac6072ec112ac038d165c75bd75e493d4a3ede43ca2df85f53e51"
   },
   "execution": {
     "executionHash": "a933b4d7b98793fb11fdd51dea6b8b046b7e09a136e37f1509e807dc08b17849",

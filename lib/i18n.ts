@@ -75,6 +75,7 @@ const en = {
       NEW_ACRONYM: "New acronym",
       EXISTING_ENTRY: "Existing entry",
       DUPLICATE_FOUND: "Duplicate found",
+      INVALIDATED_MEANING: "Meaning invalidated",
     },
   },
   search: {
@@ -119,6 +120,10 @@ const en = {
         title: "Already submitted",
         description: "You've already submitted this meaning. No points awarded.",
       },
+      INVALIDATED_MEANING: {
+        title: "Meaning invalidated",
+        description: "An admin removed this meaning from the glossary. It can't be submitted again.",
+      },
     },
   },
   validation: {
@@ -131,6 +136,11 @@ const en = {
   acronym: {
     meanings: (count: number) => (count === 1 ? "1 meaning" : `${count} meanings`),
     addedBy: (name: string, date: string) => `Added by ${name} on ${date}`,
+    invalidateLabel: (meaning: string) => `Invalidate “${meaning}”`,
+    invalidateConfirm: "Delete and take back all points?",
+    invalidate: "Invalidate",
+    cancel: "Cancel",
+    invalidateError: "The meaning couldn't be invalidated. Please try again.",
   },
 }
 
@@ -196,6 +206,7 @@ const de: Dictionary = {
       NEW_ACRONYM: "Neue Abkürzung",
       EXISTING_ENTRY: "Bekannter Eintrag",
       DUPLICATE_FOUND: "Duplikat gefunden",
+      INVALIDATED_MEANING: "Bedeutung ungültig",
     },
   },
   search: {
@@ -240,6 +251,10 @@ const de: Dictionary = {
         title: "Bereits eingetragen",
         description: "Du hast diese Bedeutung schon eingetragen. Es gibt keine Punkte.",
       },
+      INVALIDATED_MEANING: {
+        title: "Bedeutung ungültig",
+        description: "Ein Admin hat diese Bedeutung aus dem Glossar entfernt. Sie kann nicht erneut eingetragen werden.",
+      },
     },
   },
   validation: {
@@ -252,6 +267,11 @@ const de: Dictionary = {
   acronym: {
     meanings: (count) => (count === 1 ? "1 Bedeutung" : `${count} Bedeutungen`),
     addedBy: (name, date) => `Hinzugefügt von ${name} am ${date}`,
+    invalidateLabel: (meaning) => `„${meaning}“ für ungültig erklären`,
+    invalidateConfirm: "Löschen und alle Punkte zurücknehmen?",
+    invalidate: "Für ungültig erklären",
+    cancel: "Abbrechen",
+    invalidateError: "Die Bedeutung konnte nicht für ungültig erklärt werden. Bitte versuche es erneut.",
   },
 }
 

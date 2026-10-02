@@ -5,6 +5,7 @@ import { PlusIcon } from "lucide-react"
 import { AcronymCard } from "@/components/acronym-card"
 import { EmptyState } from "@/components/empty-state"
 import { buttonVariants } from "@/components/ui/button"
+import { getCurrentUser } from "@/lib/auth"
 import { findAcronym } from "@/lib/glossary"
 import { getI18n } from "@/lib/i18n-server"
 import { isValidAcronym, normalizeAcronym } from "@/lib/validation"
@@ -41,7 +42,7 @@ export default async function SearchPage({ searchParams }: PageProps<"/search">)
 }
 
 async function SearchResult({ code }: { code: string }) {
-  const [acronym, { t }] = await Promise.all([findAcronym(code), getI18n()])
+  const [acronym, { t }, user] = await Promise.all([findAcronym(code), getI18n(), getCurrentUser()])
 
   if (!acronym) {
     const [beforeCode, afterCode] = t.search.noMeaning.split("{code}")
@@ -67,7 +68,7 @@ async function SearchResult({ code }: { code: string }) {
 
   return (
     <div className="space-y-4">
-      <AcronymCard code={acronym.code} meanings={acronym.meanings} />
+      <AcronymCard code={acronym.code} meanings={acronym.meanings} canInvalidate={user.isAdmin} />
       <p className="text-sm text-muted-foreground">
         {t.search.anotherMeaning}{" "}
         <Link href={`/submit?acronym=${code}`} className="font-medium text-foreground underline underline-offset-4">

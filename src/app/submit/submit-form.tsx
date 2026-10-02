@@ -148,6 +148,7 @@ const outcomeMoods: Record<SubmissionOutcome, ComponentProps<typeof TileCharacte
   DUPLICATE_FOUND: "excited",
   EXISTING_ENTRY: "confused",
   ALREADY_SUBMITTED: "sad",
+  INVALIDATED_MEANING: "sad",
 }
 
 function SubmissionResultPanel({ result }: { result: SubmissionResult }) {

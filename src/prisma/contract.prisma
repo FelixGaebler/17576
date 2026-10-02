@@ -5,6 +5,8 @@ enum ScoreTransactionType {
   NEW_ACRONYM     = "NEW_ACRONYM"
   EXISTING_ENTRY  = "EXISTING_ENTRY"
   DUPLICATE_FOUND = "DUPLICATE_FOUND"
+  // Takes back the points of a meaning an admin deleted.
+  INVALIDATED_MEANING = "INVALIDATED_MEANING"
 }
 
 model User {
@@ -47,16 +49,20 @@ model Meaning {
 }
 
 model ScoreTransaction {
-  id        Uuid                 @id @default(uuid(7))
-  userId    Uuid
-  user      User                 @relation(fields: [userId], references: [id])
-  acronymId Uuid
-  acronym   Acronym              @relation(fields: [acronymId], references: [id])
-  meaningId Uuid
-  meaning   Meaning              @relation(fields: [meaningId], references: [id])
-  amount    Int
-  type      ScoreTransactionType
-  createdAt DateTime             @default(now())
+  id          Uuid                 @id @default(uuid(7))
+  userId      Uuid
+  user        User                 @relation(fields: [userId], references: [id])
+  // Null once the meaning was invalidated and deleted.
+  acronymId   Uuid?
+  acronym     Acronym?             @relation(fields: [acronymId], references: [id])
+  meaningId   Uuid?
+  meaning     Meaning?             @relation(fields: [meaningId], references: [id])
+  // Snapshot of the deleted meaning; set only after an invalidation.
+  acronymCode String?
+  meaningText String?
+  amount      Int
+  type        ScoreTransactionType
+  createdAt   DateTime             @default(now())
 
   // A user can score each meaning only once.
   @@unique([userId, meaningId])

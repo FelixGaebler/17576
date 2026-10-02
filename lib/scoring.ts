@@ -7,11 +7,12 @@ export const POINTS = {
   EXISTING_ENTRY: 1,
   DUPLICATE_FOUND: 10,
   ALREADY_SUBMITTED: 0,
+  INVALIDATED_MEANING: 0,
 } as const
 
 export type SubmissionOutcome = keyof typeof POINTS
 
-export type ScoreTransactionType = Exclude<SubmissionOutcome, "ALREADY_SUBMITTED">
+export type ScoreTransactionType = Exclude<SubmissionOutcome, "ALREADY_SUBMITTED" | "INVALIDATED_MEANING">
 
 export type SubmissionResult = {
   outcome: SubmissionOutcome
@@ -62,6 +63,16 @@ function recordSubmission(
   const createdAt = Temporal.Instant.fromEpochMilliseconds(submittedAt.getTime())
 
   return getDb().transaction(async (tx): Promise<SubmissionOutcome> => {
+    const invalidations = await tx.orm.public.ScoreTransaction.where({
+      type: "INVALIDATED_MEANING",
+      acronymCode: code,
+    })
+      .select("meaningText")
+      .all()
+    if (invalidations.some((t) => t.meaningText !== null && normalizeMeaning(t.meaningText) === normalizedText)) {
+      return "INVALIDATED_MEANING"
+    }
+
     const existingAcronym = await tx.orm.public.Acronym.where({ code }).first()
 
     const existingMeaning = existingAcronym
@@ -129,6 +140,53 @@ function isUniqueViolation(error: unknown) {
   return error instanceof Error && "sqlState" in error && error.sqlState === "23505"
 }
 
+/**
+ * Deletes a meaning and takes its points back from everybody who scored it with a
+ * negative transaction, which also blocks the meaning from being submitted again.
+ * Returns false if the meaning no longer exists.
+ */
+export function invalidateMeaning(meaningId: string) {
+  return getDb().transaction(async (tx) => {
+    const meaning = await tx.orm.public.Meaning.where({ id: meaningId })
+      .include("acronym", (acronym) => acronym.select("id", "code"))
+      .first()
+    if (!meaning) return false
+
+    const snapshot = { acronymCode: meaning.acronym.code, meaningText: meaning.text }
+    const transactions = await tx.orm.public.ScoreTransaction.where({ meaningId }).all()
+
+    await tx.orm.public.ScoreTransaction.where({ meaningId }).updateAndCount({
+      acronymId: null,
+      meaningId: null,
+      ...snapshot,
+    })
+
+    for (const { userId, amount } of transactions) {
+      await tx.orm.public.ScoreTransaction.create({
+        userId,
+        amount: -amount,
+        type: "INVALIDATED_MEANING",
+        ...snapshot,
+      })
+      await tx.execute(
+        tx.sql.public.user
+          .update((user, fns) => ({
+            score: fns.raw`${user.score} - ${amount}`.returns("pg/int4@1"),
+          }))
+          .where((user, fns) => fns.eq(user.id, userId))
+          .build(),
+      )
+    }
+
+    await tx.orm.public.Meaning.where({ id: meaningId }).deleteAndCount()
+
+    const hasOtherMeanings = (await tx.orm.public.Meaning.where({ acronymId: meaning.acronym.id }).first()) !== null
+    if (!hasOtherMeanings) await tx.orm.public.Acronym.where({ id: meaning.acronym.id }).deleteAndCount()
+
+    return true
+  })
+}
+
 /** All users, best first. Ties are broken by name and id so the order is stable. */
 export async function getLeaderboard() {
   const users = await getDb()
@@ -151,8 +209,8 @@ export async function getScoreHistory(userId: string) {
     id: transaction.id,
     type: transaction.type,
     amount: transaction.amount,
-    acronym: transaction.acronym.code,
-    meaning: transaction.meaning.text,
+    acronym: transaction.acronym?.code ?? transaction.acronymCode ?? "",
+    meaning: transaction.meaning?.text ?? transaction.meaningText ?? "",
     createdAt: new Date(transaction.createdAt.epochMilliseconds),
   }))
 }

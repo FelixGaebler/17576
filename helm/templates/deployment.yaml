@@ -59,6 +59,8 @@ spec:
               value: {{ .Values.oidc.clientId | quote }}
             - name: OIDC_SCOPES
               value: {{ .Values.oidc.scopes | quote }}
+            - name: OIDC_ADMIN_GROUP
+              value: {{ .Values.oidc.adminGroup | quote }}
             - name: APP_URL
               value: {{ .Values.oidc.appUrl | quote }}
             - name: OIDC_CLIENT_SECRET

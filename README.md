@@ -72,6 +72,7 @@ mean something inside your company, and build a useful glossary along the way.
 | `DUPLICATE_FOUND`   | The acronym exists, but this meaning is new            |    +10 |
 | `EXISTING_ENTRY`    | Acronym and meaning are both already documented        |     +1 |
 | `ALREADY_SUBMITTED` | You have already submitted this exact meaning          |      0 |
+| `INVALIDATED_MEANING` | An admin removed this meaning (see [Admins](#admins)) |      0 |
 
 A few rules keep it fair:
 
@@ -160,6 +161,7 @@ are signed in as the development user *Felix Weber*.
 | `OIDC_CLIENT_ID`     | for sign-in | Client ID registered at the provider                                |
 | `OIDC_CLIENT_SECRET` |     no      | Client secret; omit for a public client (PKCE only)                 |
 | `OIDC_SCOPES`        |     no      | Requested scopes, default `openid profile email`                    |
+| `OIDC_ADMIN_GROUP`   |     no      | Group in the `groups` claim that makes a user admin, default `twentysix_admin` |
 | `APP_URL`            | for sign-in | Public URL of the app, e.g. `https://acronyms.example.com`          |
 | `SESSION_SECRET`     | for sign-in | At least 32 random characters, encrypts the session cookie          |
 | `AUTH_DEV_USER`      |     no      | `true` allows the shared development user in production (demos only) |
@@ -210,6 +212,8 @@ helm/                       Helm chart for Kubernetes
 
 Four tables. `ScoreTransaction` is both the score history and the record of
 who already submitted which meaning – there is no separate "discovery" table.
+When an admin invalidates a meaning, its transactions keep a snapshot of the
+acronym and text instead of the deleted rows.
 
 ```mermaid
 erDiagram
@@ -239,7 +243,9 @@ erDiagram
     ScoreTransaction {
         uuid id "UUIDv7"
         int amount
-        string type "NEW_ACRONYM | EXISTING_ENTRY | DUPLICATE_FOUND"
+        string type "NEW_ACRONYM | EXISTING_ENTRY | DUPLICATE_FOUND | INVALIDATED_MEANING"
+        string acronymCode "snapshot after invalidation"
+        string meaningText "snapshot after invalidation"
     }
 ```
 
@@ -249,7 +255,9 @@ erDiagram
 flowchart TD
     A[Submit acronym + meaning] --> B{Valid?<br/>3 letters, uppercase letters match}
     B -- no --> X[Show validation error]
-    B -- yes --> E{Does the acronym exist?}
+    B -- yes --> V{Was the meaning<br/>invalidated by an admin?}
+    V -- yes --> W[INVALIDATED_MEANING · 0]
+    V -- no --> E{Does the acronym exist?}
     E -- no --> F[NEW_ACRONYM · +5<br/>create acronym + meaning]
     E -- yes --> G{Does the normalized<br/>meaning exist?}
     G -- no --> I[DUPLICATE_FOUND · +10<br/>create meaning]
@@ -339,6 +347,25 @@ APP_URL=https://acronyms.example.com
 SESSION_SECRET=$(openssl rand -base64 32)
 ```
 
+### Admins
+
+Members of the group `twentysix_admin` (change it with `OIDC_ADMIN_GROUP`) see
+a button next to every meaning in the search results to **invalidate** it. The
+meaning is deleted (with its acronym, if it was the last meaning), everybody who
+scored it gets a negative transaction for the same amount, and the meaning can't
+be submitted again.
+
+The group is read from the `groups` claim of the ID token at sign-in:
+
+- **Authentik:** the default `profile` scope already includes `groups`. Create
+  a group `twentysix_admin` and add the admins.
+- **Keycloak:** create a group `twentysix_admin`, then add a *Group Membership*
+  mapper (token claim name `groups`, *Add to ID token* on) to the client's
+  dedicated scope. Full group paths (`/twentysix_admin`) are accepted for
+  top-level groups.
+
+Without a provider, the development user is an admin outside production.
+
 ### Without a provider
 
 If `OIDC_ISSUER` is not set, everybody is signed in as one shared development
@@ -390,8 +417,8 @@ bun run db:migrate --db $TEST_DATABASE_URL
 bun run test
 ```
 
-They cover all four scoring outcomes, normalization, the database constraints
-and concurrent double submissions.
+They cover all scoring outcomes, invalidation, normalization, the database
+constraints and concurrent double submissions.
 
 ### Changing the data model
 
@@ -537,13 +564,14 @@ deliberately instead of rediscovered.
 | **Cached score on `User`** | The scoreboard is a single cheap query | Denormalized; kept consistent by incrementing in SQL inside the same transaction as the score transaction | Scoring rules become retroactive |
 | **Stateless sessions** (encrypted cookie, 7 days, no refresh against the provider) | No session store, no extra infrastructure | A user disabled at the identity provider keeps access until the cookie expires | Offboarding must take effect immediately: shorter lifetime or refresh tokens |
 | **`email` is unique and required** | Simple user model | Users without an `email` claim get a placeholder address; an email already used by another account makes sign-in fail | Several identity providers per instance |
-| **New meanings earn the most points (+10)** | Finding ambiguity is the core of the game | Easy to farm with made-up meanings whose uppercase letters spell the acronym | Moderation (see [Ideas](#ideas)) |
+| **New meanings earn the most points (+10)** | Finding ambiguity is the core of the game | Easy to farm with made-up meanings whose uppercase letters spell the acronym | Admins can invalidate them; revisit if that isn't enough |
+| **Admin role from the ID token's `groups` claim**, stored in the session cookie | No role table, roles are managed where users are | Adding or removing an admin takes effect at the next sign-in (up to 7 days) | Role changes must apply immediately |
+| **Invalidation deletes the meaning, but keeps its transactions** with a snapshot and adds negative ones | History stays complete and explains the lost points; the negative transactions also block resubmission without an extra table | `ScoreTransaction.acronymId`/`meaningId` are nullable; blocking checks normalize the snapshot texts of an acronym in code | Invalidations become frequent or need a reason / undo |
 | **Only uppercase letters count** for the acronym check | Supports real-world acronyms that skip words (*Allocation and Offer Force* → `AOF`) | Users must capitalize every word that belongs to the acronym (*Point Of Sale*); all-lowercase input is rejected | Users find it confusing: accept first letters *or* uppercase letters |
 | **Scoring tests need a real PostgreSQL** | Constraints, transactions and races can't be mocked meaningfully | They are skipped unless `TEST_DATABASE_URL` is set and don't run in CI yet | A Postgres service container is added to CI |
 
 ## Ideas
 
-- Roles from the identity provider, e.g. moderators via a group claim
 - Moderation: edit or merge meanings, report nonsense
 - Import an existing glossary from CSV
 - Achievements, e.g. "first to find a triple meaning"

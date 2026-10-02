@@ -28,7 +28,8 @@ export const getCurrentUser = cache(async () => {
   // Cookies issued before the switch to UUIDs carry a numeric id; treat them as logged out.
   const user = typeof session?.userId === "string" && (await users().where({ id: session.userId }).first())
   if (!user) redirect("/auth/login")
-  return user
+  // Group membership is read at sign-in, so changes apply with the next login.
+  return { ...user, isAdmin: session?.isAdmin === true }
 })
 
 async function getDevelopmentUser() {
@@ -37,8 +38,11 @@ async function getDevelopmentUser() {
     throw new Error("OIDC is not configured. Set OIDC_* (see README) or AUTH_DEV_USER=true for a demo.")
   }
 
-  const user = await users().where({ externalId: DEVELOPMENT_USER.externalId }).first()
-  return user ?? (await users().create(DEVELOPMENT_USER))
+  const user =
+    (await users().where({ externalId: DEVELOPMENT_USER.externalId }).first()) ??
+    (await users().create(DEVELOPMENT_USER))
+  // Locally the development user can try the admin features; never in a production demo.
+  return { ...user, isAdmin: process.env.NODE_ENV !== "production" }
 }
 
 function stringClaim(claims: IDToken, name: string) {

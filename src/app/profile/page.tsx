@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   const rank = leaderboard.find((entry) => entry.id === user.id)?.rank
 
   const stats = [
-    { label: t.profile.submissions, value: history.length },
+    { label: t.profile.submissions, value: history.filter((entry) => entry.type !== "INVALIDATED_MEANING").length },
     { label: t.profile.newAcronyms, value: history.filter((entry) => entry.type === "NEW_ACRONYM").length },
     { label: t.profile.duplicatesFound, value: history.filter((entry) => entry.type === "DUPLICATE_FOUND").length },
   ]

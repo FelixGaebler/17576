@@ -1,0 +1,164 @@
+[
+  {
+    "id": "table.invalidatedMeaning",
+    "label": "Create table \"invalidatedMeaning\"",
+    "summary": "Creates table \"invalidatedMeaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "invalidatedMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"invalidatedMeaning\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"invalidatedMeaning\"",
+        "sql": "CREATE TABLE \"public\".\"invalidatedMeaning\" (\n  \"acronymCode\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"invalidatedByUserId\" uuid NOT NULL,\n  \"normalizedText\" text NOT NULL,\n  \"text\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"invalidatedMeaning\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.invalidatedMeaning.invalidatedMeaning_acronymCode_normalizedText_key",
+    "label": "Add unique constraint on \"invalidatedMeaning\" (acronymCode, normalizedText)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "invalidatedMeaning_acronymCode_normalizedText_key",
+        "table": "invalidatedMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"invalidatedMeaning_acronymCode_normalizedText_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "invalidatedMeaning_acronymCode_normalizedText_key",
+          "public",
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"invalidatedMeaning_acronymCode_normalizedText_key\"",
+        "sql": "ALTER TABLE \"public\".\"invalidatedMeaning\" ADD CONSTRAINT \"invalidatedMeaning_acronymCode_normalizedText_key\" UNIQUE (\"acronymCode\", \"normalizedText\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"invalidatedMeaning_acronymCode_normalizedText_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "invalidatedMeaning_acronymCode_normalizedText_key",
+          "public",
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.invalidatedMeaning.invalidatedMeaning_invalidatedByUserId_idx_63040bb1",
+    "label": "Create index \"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\" on \"invalidatedMeaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "invalidatedMeaning_invalidatedByUserId_idx_63040bb1",
+        "table": "invalidatedMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\"",
+        "sql": "CREATE INDEX \"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\" ON \"public\".\"invalidatedMeaning\" (\"invalidatedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"invalidatedMeaning_invalidatedByUserId_idx_63040bb1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.invalidatedMeaning.invalidatedMeaning_invalidatedByUserId_fkey",
+    "label": "Add foreign key \"invalidatedMeaning_invalidatedByUserId_fkey\" on \"invalidatedMeaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "invalidatedMeaning_invalidatedByUserId_fkey",
+        "table": "invalidatedMeaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"invalidatedMeaning_invalidatedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "invalidatedMeaning_invalidatedByUserId_fkey",
+          "public",
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"invalidatedMeaning_invalidatedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"invalidatedMeaning\"\nADD CONSTRAINT \"invalidatedMeaning_invalidatedByUserId_fkey\"\nFOREIGN KEY (\"invalidatedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"invalidatedMeaning_invalidatedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "invalidatedMeaning_invalidatedByUserId_fkey",
+          "public",
+          "\"public\".\"invalidatedMeaning\""
+        ]
+      }
+    ]
+  }
+]

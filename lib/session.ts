@@ -38,4 +38,4 @@ export async function unseal<T extends JWTPayload>(value: string | undefined): P
   }
 }
 
-export type Session = { userId: string }
+export type Session = { userId: string; isAdmin?: boolean }
