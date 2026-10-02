@@ -26,9 +26,12 @@ function formatMeaning(meaning: string) {
   return meaning.trim().replace(/\s+/g, " ")
 }
 
-/** The form used to decide whether two meanings are the same. */
+/**
+ * The form used to decide whether two meanings are the same: case, spacing and
+ * punctuation don't count, so "Promo-Item Pool" equals "Promo Item Pool".
+ */
 export function normalizeMeaning(meaning: string) {
-  return formatMeaning(meaning).toLowerCase()
+  return meaning.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "")
 }
 
 /**

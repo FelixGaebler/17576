@@ -74,6 +74,13 @@ describe("normalizeMeaning", () => {
     expect(normalizeMeaning("  apple   often fails")).toBe(normalizeMeaning("Apple Often Fails"))
   })
 
+  test.each(["Promo Item Pool", "Promo-Item Pool", "Promo_Item  Pool", "PromoItem Pool", "Promo-Item Pool."])(
+    "treats %p as the same meaning as Promo Item Pool",
+    (meaning) => {
+      expect(normalizeMeaning(meaning)).toBe(normalizeMeaning("Promo Item Pool"))
+    },
+  )
+
   test("keeps different meanings apart", () => {
     expect(normalizeMeaning("Apple Often Fails")).not.toBe(normalizeMeaning("Apple Often Fail"))
   })
