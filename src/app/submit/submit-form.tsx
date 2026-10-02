@@ -18,7 +18,7 @@ import type { SubmissionOutcome, SubmissionResult } from "@/lib/scoring"
 import { cn } from "@/lib/utils"
 import {
   ACRONYM_LENGTH,
-  getInitials,
+  getUppercaseLetters,
   MEANING_MAX_LENGTH,
   validateSubmission,
   type ValidationError,
@@ -28,7 +28,7 @@ import { submitAcronymAction, type SubmitState } from "./actions"
 function describeError(t: Dictionary, error: ValidationError, acronym: string, meaning: string) {
   switch (error) {
     case "initialsMismatch":
-      return t.validation.initialsMismatch(getInitials(meaning), acronym.toUpperCase())
+      return t.validation.initialsMismatch(getUppercaseLetters(meaning), acronym.toUpperCase())
     case "meaningTooLong":
       return t.validation.meaningTooLong(MEANING_MAX_LENGTH)
     default:

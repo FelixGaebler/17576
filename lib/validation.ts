@@ -31,16 +31,16 @@ export function normalizeMeaning(meaning: string) {
   return formatMeaning(meaning).toLowerCase()
 }
 
-export function getInitials(meaning: string) {
-  return formatMeaning(meaning)
-    .split(" ")
-    .filter(Boolean)
-    .map((word) => word[0].toUpperCase())
-    .join("")
+/**
+ * The uppercase letters of a meaning, which have to spell the acronym.
+ * Lowercase filler words don't count: "Allocation and Offer Force" → "AOF".
+ */
+export function getUppercaseLetters(meaning: string) {
+  return (meaning.match(/\p{Lu}/gu) ?? []).join("")
 }
 
 function meaningMatchesAcronym(acronym: string, meaning: string) {
-  return getInitials(meaning) === normalizeAcronym(acronym)
+  return getUppercaseLetters(meaning) === normalizeAcronym(acronym)
 }
 
 const acronymSchema = z

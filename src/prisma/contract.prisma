@@ -8,7 +8,7 @@ enum ScoreTransactionType {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
+  id          Uuid     @id @default(uuid(7))
   // Identifier from the identity provider (Keycloak, later).
   externalId  String   @unique
   displayName String
@@ -21,9 +21,9 @@ model User {
 }
 
 model Acronym {
-  id              Int       @id @default(autoincrement())
+  id              Uuid      @id @default(uuid(7))
   code            String    @unique
-  createdByUserId Int
+  createdByUserId Uuid
   createdBy       User      @relation(fields: [createdByUserId], references: [id])
   meanings        Meaning[]
   createdAt       DateTime  @default(now())
@@ -33,12 +33,12 @@ model Acronym {
 }
 
 model Meaning {
-  id              Int      @id @default(autoincrement())
-  acronymId       Int
+  id              Uuid     @id @default(uuid(7))
+  acronymId       Uuid
   acronym         Acronym  @relation(fields: [acronymId], references: [id])
   text            String
   normalizedText  String
-  createdByUserId Int
+  createdByUserId Uuid
   createdBy       User     @relation(fields: [createdByUserId], references: [id])
   createdAt       DateTime @default(now())
   updatedAt       temporal.updatedAt()
@@ -47,12 +47,12 @@ model Meaning {
 }
 
 model ScoreTransaction {
-  id        Int                  @id @default(autoincrement())
-  userId    Int
+  id        Uuid                 @id @default(uuid(7))
+  userId    Uuid
   user      User                 @relation(fields: [userId], references: [id])
-  acronymId Int
+  acronymId Uuid
   acronym   Acronym              @relation(fields: [acronymId], references: [id])
-  meaningId Int
+  meaningId Uuid
   meaning   Meaning              @relation(fields: [meaningId], references: [id])
   amount    Int
   type      ScoreTransactionType

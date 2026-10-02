@@ -27,6 +27,10 @@ export function AcronymInput({ value, onChange, onComplete, ...props }: AcronymI
       onChange={(next) => onChange(next.toUpperCase())}
       onComplete={(next: string) => onComplete?.(next.toUpperCase())}
       pasteTransformer={(text) => text.replace(/[^a-z]/gi, "").toUpperCase()}
+      // input-otp defaults to a numeric keyboard on mobile.
+      inputMode="text"
+      autoCapitalize="characters"
+      autoCorrect="off"
       autoComplete="off"
       {...props}
     >

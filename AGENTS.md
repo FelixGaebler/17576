@@ -74,6 +74,9 @@ Path alias `@/*` maps to the repo root (`@/lib/...`, `@/components/...`,
 - **Scoring rules** (see README "How the game works"): +5 new acronym, +10 new
   meaning of a known acronym, +1 known acronym and meaning, 0 if the same user
   already submitted that meaning. Uniqueness is per **user + meaning**.
+- **Acronym check:** only the **uppercase letters** of a meaning must spell the
+  acronym (`getUppercaseLetters()`): *Allocation and Offer Force* → `AOF`,
+  *Point of Sale* → `PS`. Seed and test meanings must follow this.
 - **Integrity lives in the database**: unique `Acronym.code` + check
   `^[A-Z]{3}$`, unique `(acronymId, normalizedText)`, unique
   `(userId, meaningId)`. Submissions run in one transaction; the score is
@@ -104,6 +107,17 @@ references before writing queries, contract changes or migrations.
   `temporal-polyfill` (Node 24 has no `Temporal`); convert to `Date` with
   `new Date(x.epochMilliseconds)` before passing data to Client Components.
 - `.all()` results are awaited directly; consume each result only once.
+
+### Database ids
+
+- Every entity uses a UUIDv7 primary key: `id Uuid @id @default(uuid(7))`.
+  Never use `Int @id @default(autoincrement())`; foreign keys are `Uuid` too.
+- Prisma generates the id when a row is created (the column has no database
+  default), so ids are unguessable but roughly time-ordered.
+- In TypeScript ids are `string`. Never parse or compare them numerically; order
+  by `createdAt` and use the id only as a tie-breaker.
+- To match all rows (tests, seed), use `where((x) => x.id.isNotNull())`, not
+  `id.gt(0)`.
 
 ## Next.js 16 specifics
 

@@ -1,28 +1,34 @@
 import { describe, expect, test } from "bun:test"
 
-import { getInitials, normalizeMeaning, submissionSchema, validateSubmission } from "./validation"
+import { getUppercaseLetters, normalizeMeaning, submissionSchema, validateSubmission } from "./validation"
 
 describe("validateSubmission", () => {
   test.each([
     ["AOF", "Apple Often Fails"],
+    ["AOF", "Allocation and Offer Force"],
     ["ABC", "Alpha Beta Charlie"],
-    ["ABC", "alpha beta charlie"],
     ["ABC", "Alpha  Beta   Charlie"],
-    ["POS", "Point of Sale"],
+    ["POS", "Point Of Sale"],
     ["abc", "  Alpha Beta Charlie  "],
   ])("%s / %s is valid", (acronym, meaning) => {
     expect(validateSubmission({ acronym, meaning }).success).toBe(true)
   })
 
-  test("rejects a meaning whose initials don't match", () => {
-    expect(validateSubmission({ acronym: "AOF", meaning: "Apple Offers" })).toEqual({
+  test.each([
+    ["AOF", "Apple Offers"],
+    ["ABC", "alpha beta charlie"],
+    ["POS", "Point of Sale"],
+    ["AOF", "Allocation And Offer Force"],
+  ])("%s / %s is invalid because its uppercase letters don't spell the acronym", (acronym, meaning) => {
+    expect(validateSubmission({ acronym, meaning })).toEqual({
       success: false,
       errors: { meaning: "initialsMismatch" },
     })
   })
 
-  test("reports the initials actually found", () => {
-    expect(getInitials("Apple   offers")).toBe("AO")
+  test("reports the uppercase letters actually found", () => {
+    expect(getUppercaseLetters("Allocation and   Offer Force")).toBe("AOF")
+    expect(getUppercaseLetters("apple offers")).toBe("")
   })
 
   test.each(["AB1", "ABCD", "AB", "A C", "ÄBC", ""])("rejects the acronym %p", (acronym) => {

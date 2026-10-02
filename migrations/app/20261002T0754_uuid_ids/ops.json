@@ -1,0 +1,1171 @@
+[
+  {
+    "id": "dropDefault.scoreTransaction.id",
+    "label": "Drop default on \"scoreTransaction\".\"id\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop default on \"id\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"id\" DROP DEFAULT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has no default",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropDefault.meaning.id",
+    "label": "Drop default on \"meaning\".\"id\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop default on \"id\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" ALTER COLUMN \"id\" DROP DEFAULT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has no default",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropDefault.acronym.id",
+    "label": "Drop default on \"acronym\".\"id\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "acronym",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop default on \"id\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\" ALTER COLUMN \"id\" DROP DEFAULT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has no default",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "acronym",
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropDefault.user.id",
+    "label": "Drop default on \"user\".\"id\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop default on \"id\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ALTER COLUMN \"id\" DROP DEFAULT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has no default",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.acronym.acronym_createdByUserId_fkey",
+    "label": "Drop constraint \"acronym_createdByUserId_fkey\" on \"acronym\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "acronym_createdByUserId_fkey",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"acronym_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_createdByUserId_fkey",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"acronym_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\" DROP CONSTRAINT \"acronym_createdByUserId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"acronym_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_createdByUserId_fkey",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.meaning.meaning_acronymId_fkey",
+    "label": "Drop constraint \"meaning_acronymId_fkey\" on \"meaning\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "meaning_acronymId_fkey",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"meaning_acronymId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"meaning_acronymId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" DROP CONSTRAINT \"meaning_acronymId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"meaning_acronymId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.meaning.meaning_createdByUserId_fkey",
+    "label": "Drop constraint \"meaning_createdByUserId_fkey\" on \"meaning\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "meaning_createdByUserId_fkey",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"meaning_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_createdByUserId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"meaning_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" DROP CONSTRAINT \"meaning_createdByUserId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"meaning_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_createdByUserId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.scoreTransaction.scoreTransaction_userId_fkey",
+    "label": "Drop constraint \"scoreTransaction_userId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_userId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"scoreTransaction_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" DROP CONSTRAINT \"scoreTransaction_userId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.scoreTransaction.scoreTransaction_acronymId_fkey",
+    "label": "Drop constraint \"scoreTransaction_acronymId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_acronymId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_acronymId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_acronymId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"scoreTransaction_acronymId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" DROP CONSTRAINT \"scoreTransaction_acronymId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_acronymId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_acronymId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.scoreTransaction.scoreTransaction_meaningId_fkey",
+    "label": "Drop constraint \"scoreTransaction_meaningId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_meaningId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scoreTransaction_meaningId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_meaningId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"scoreTransaction_meaningId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" DROP CONSTRAINT \"scoreTransaction_meaningId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scoreTransaction_meaningId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_meaningId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.clear-tables",
+    "label": "Delete all users, acronyms, meanings and score transactions",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "user"
+      }
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "truncate all tables",
+        "sql": "TRUNCATE \"public\".\"scoreTransaction\", \"public\".\"meaning\", \"public\".\"acronym\", \"public\".\"user\""
+      },
+      {
+        "description": "drop scoreTransaction id sequence",
+        "sql": "DROP SEQUENCE IF EXISTS \"public\".\"scoreTransaction_id_seq\""
+      },
+      {
+        "description": "drop meaning id sequence",
+        "sql": "DROP SEQUENCE IF EXISTS \"public\".\"meaning_id_seq\""
+      },
+      {
+        "description": "drop acronym id sequence",
+        "sql": "DROP SEQUENCE IF EXISTS \"public\".\"acronym_id_seq\""
+      },
+      {
+        "description": "drop user id sequence",
+        "sql": "DROP SEQUENCE IF EXISTS \"public\".\"user_id_seq\""
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "alterType.scoreTransaction.id",
+    "label": "Alter type of \"scoreTransaction\".\"id\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"id\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"id\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "id",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.meaning.id",
+    "label": "Alter type of \"meaning\".\"id\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"id\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" ALTER COLUMN \"id\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "id",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.acronym.id",
+    "label": "Alter type of \"acronym\".\"id\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "acronym",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"id\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\" ALTER COLUMN \"id\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "acronym",
+          "id",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.user.id",
+    "label": "Alter type of \"user\".\"id\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"id\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ALTER COLUMN \"id\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "id",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.acronym.createdByUserId",
+    "label": "Alter type of \"acronym\".\"createdByUserId\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "createdByUserId",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"createdByUserId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "acronym",
+          "createdByUserId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"createdByUserId\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\" ALTER COLUMN \"createdByUserId\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"createdByUserId\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "acronym",
+          "createdByUserId",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.meaning.acronymId",
+    "label": "Alter type of \"meaning\".\"acronymId\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "acronymId",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"acronymId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "acronymId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"acronymId\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" ALTER COLUMN \"acronymId\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"acronymId\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "acronymId",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.meaning.createdByUserId",
+    "label": "Alter type of \"meaning\".\"createdByUserId\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "createdByUserId",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"createdByUserId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "createdByUserId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"createdByUserId\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\" ALTER COLUMN \"createdByUserId\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"createdByUserId\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "meaning",
+          "createdByUserId",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.scoreTransaction.userId",
+    "label": "Alter type of \"scoreTransaction\".\"userId\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "userId",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"userId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "userId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"userId\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"userId\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"userId\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "userId",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.scoreTransaction.acronymId",
+    "label": "Alter type of \"scoreTransaction\".\"acronymId\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "acronymId",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"acronymId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "acronymId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"acronymId\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"acronymId\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"acronymId\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "acronymId",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.scoreTransaction.meaningId",
+    "label": "Alter type of \"scoreTransaction\".\"meaningId\" to uuid",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "meaningId",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"meaningId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "meaningId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"meaningId\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\" ALTER COLUMN \"meaningId\" TYPE uuid USING gen_random_uuid()"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"meaningId\" has type \"uuid\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "scoreTransaction",
+          "meaningId",
+          "uuid"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "foreignKey.acronym.acronym_createdByUserId_fkey",
+    "label": "Add foreign key \"acronym_createdByUserId_fkey\" on \"acronym\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "acronym_createdByUserId_fkey",
+        "table": "acronym"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"acronym_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_createdByUserId_fkey",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"acronym_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"acronym\"\nADD CONSTRAINT \"acronym_createdByUserId_fkey\"\nFOREIGN KEY (\"createdByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"acronym_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acronym_createdByUserId_fkey",
+          "public",
+          "\"public\".\"acronym\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.meaning.meaning_acronymId_fkey",
+    "label": "Add foreign key \"meaning_acronymId_fkey\" on \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "meaning_acronymId_fkey",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"meaning_acronymId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"meaning_acronymId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\"\nADD CONSTRAINT \"meaning_acronymId_fkey\"\nFOREIGN KEY (\"acronymId\")\nREFERENCES \"public\".\"acronym\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"meaning_acronymId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_acronymId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.meaning.meaning_createdByUserId_fkey",
+    "label": "Add foreign key \"meaning_createdByUserId_fkey\" on \"meaning\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "meaning_createdByUserId_fkey",
+        "table": "meaning"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"meaning_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_createdByUserId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"meaning_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"meaning\"\nADD CONSTRAINT \"meaning_createdByUserId_fkey\"\nFOREIGN KEY (\"createdByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"meaning_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "meaning_createdByUserId_fkey",
+          "public",
+          "\"public\".\"meaning\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.scoreTransaction.scoreTransaction_userId_fkey",
+    "label": "Add foreign key \"scoreTransaction_userId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_userId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"scoreTransaction_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"scoreTransaction_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\"\nADD CONSTRAINT \"scoreTransaction_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"scoreTransaction_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_userId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.scoreTransaction.scoreTransaction_acronymId_fkey",
+    "label": "Add foreign key \"scoreTransaction_acronymId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_acronymId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"scoreTransaction_acronymId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_acronymId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"scoreTransaction_acronymId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\"\nADD CONSTRAINT \"scoreTransaction_acronymId_fkey\"\nFOREIGN KEY (\"acronymId\")\nREFERENCES \"public\".\"acronym\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"scoreTransaction_acronymId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_acronymId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.scoreTransaction.scoreTransaction_meaningId_fkey",
+    "label": "Add foreign key \"scoreTransaction_meaningId_fkey\" on \"scoreTransaction\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "scoreTransaction_meaningId_fkey",
+        "table": "scoreTransaction"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"scoreTransaction_meaningId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_meaningId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"scoreTransaction_meaningId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"scoreTransaction\"\nADD CONSTRAINT \"scoreTransaction_meaningId_fkey\"\nFOREIGN KEY (\"meaningId\")\nREFERENCES \"public\".\"meaning\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"scoreTransaction_meaningId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scoreTransaction_meaningId_fkey",
+          "public",
+          "\"public\".\"scoreTransaction\""
+        ]
+      }
+    ]
+  }
+]

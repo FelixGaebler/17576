@@ -20,7 +20,8 @@ describe("safeReturnTo", () => {
 
 describe("session cookies", () => {
   test("round-trip the payload", async () => {
-    expect(await unseal<{ userId: number }>(await seal({ userId: 42 }, 60))).toMatchObject({ userId: 42 })
+    const userId = crypto.randomUUID()
+    expect(await unseal<{ userId: string }>(await seal({ userId }, 60))).toMatchObject({ userId })
   })
 
   test("reject tampered values", async () => {

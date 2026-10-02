@@ -12,14 +12,14 @@ if (testDatabaseUrl) process.env.DATABASE_URL = testDatabaseUrl
 
 describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
   const db = getDb()
-  let felix: number
-  let anna: number
+  let felix: string
+  let anna: string
 
   beforeEach(async () => {
-    await db.orm.public.ScoreTransaction.where((t) => t.id.gt(0)).deleteAndCount()
-    await db.orm.public.Meaning.where((m) => m.id.gt(0)).deleteAndCount()
-    await db.orm.public.Acronym.where((a) => a.id.gt(0)).deleteAndCount()
-    await db.orm.public.User.where((u) => u.id.gt(0)).deleteAndCount()
+    await db.orm.public.ScoreTransaction.where((t) => t.id.isNotNull()).deleteAndCount()
+    await db.orm.public.Meaning.where((m) => m.id.isNotNull()).deleteAndCount()
+    await db.orm.public.Acronym.where((a) => a.id.isNotNull()).deleteAndCount()
+    await db.orm.public.User.where((u) => u.id.isNotNull()).deleteAndCount()
 
     felix = await createUser("felix")
     anna = await createUser("anna")
@@ -36,7 +36,7 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
     return user.id
   }
 
-  async function scoreOf(userId: number) {
+  async function scoreOf(userId: string) {
     const user = await db.orm.public.User.where({ id: userId }).first()
     return user?.score
   }
@@ -51,7 +51,7 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
   }
 
   /** The cached user score must always equal the sum of the user's transactions. */
-  async function expectScoreMatchesTransactions(userId: number) {
+  async function expectScoreMatchesTransactions(userId: string) {
     const { total } = await db.orm.public.ScoreTransaction.where({ userId }).aggregate((a) => ({
       total: a.sum("amount"),
     }))
@@ -78,10 +78,10 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
   })
 
   test("a known acronym and normalized meaning is an EXISTING_ENTRY worth 1 point", async () => {
-    await submitAcronym(anna, { acronym: "POS", meaning: "Point of Sale" })
+    await submitAcronym(anna, { acronym: "POS", meaning: "Point Of Sale" })
     const progressBefore = await getGlossaryProgress()
 
-    const result = await submitAcronym(felix, { acronym: "pos", meaning: "  point   OF sale " })
+    const result = await submitAcronym(felix, { acronym: "pos", meaning: "  Point   Of   Sale " })
 
     expect(result.outcome).toBe("EXISTING_ENTRY")
     expect(result.awardedPoints).toBe(1)
@@ -91,7 +91,7 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
 
     const meaning = await db.orm.public.Meaning.first()
     const transaction = await db.orm.public.ScoreTransaction.where({ userId: felix }).first()
-    expect(meaning?.text).toBe("Point of Sale")
+    expect(meaning?.text).toBe("Point Of Sale")
     expect(transaction?.meaningId).toBe(meaning?.id)
   })
 
@@ -119,7 +119,7 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
   test("a user can score each meaning only once", async () => {
     await submitAcronym(felix, { acronym: "ABC", meaning: "Application Business Controller" })
 
-    const sameMeaning = await submitAcronym(felix, { acronym: "abc", meaning: "application  business controller" })
+    const sameMeaning = await submitAcronym(felix, { acronym: "abc", meaning: "Application  Business  Controller" })
     const newMeaning = await submitAcronym(felix, { acronym: "ABC", meaning: "Automated Booking Component" })
 
     expect(sameMeaning).toMatchObject({ outcome: "ALREADY_SUBMITTED", awardedPoints: 0 })
@@ -157,8 +157,8 @@ describe.skipIf(!testDatabaseUrl)("submitAcronym", () => {
   test("the score and the transaction history always agree", async () => {
     await submitAcronym(anna, { acronym: "ABC", meaning: "Application Business Controller" })
     await submitAcronym(felix, { acronym: "ABC", meaning: "Automated Booking Component" })
-    await submitAcronym(felix, { acronym: "POS", meaning: "Point of Sale" })
-    await submitAcronym(anna, { acronym: "POS", meaning: "Point of Sale" })
+    await submitAcronym(felix, { acronym: "POS", meaning: "Point Of Sale" })
+    await submitAcronym(anna, { acronym: "POS", meaning: "Point Of Sale" })
     await submitAcronym(anna, { acronym: "POS", meaning: "Purchase Order System" })
 
     expect(await scoreOf(felix)).toBe(15)

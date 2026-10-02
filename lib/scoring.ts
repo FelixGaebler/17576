@@ -27,7 +27,7 @@ export type SubmissionResult = {
  * `submittedAt` is only overridden by the seed script to backdate history.
  */
 export async function submitAcronym(
-  userId: number,
+  userId: string,
   input: Submission,
   submittedAt = new Date(),
 ): Promise<SubmissionResult> {
@@ -54,7 +54,7 @@ export async function submitAcronym(
 }
 
 function recordSubmission(
-  userId: number,
+  userId: string,
   { acronym: code, meaning: text }: Submission,
   submittedAt: Date,
 ) {
@@ -139,7 +139,7 @@ export async function getLeaderboard() {
   return users.map((user, index) => ({ ...user, rank: index + 1 }))
 }
 
-export async function getScoreHistory(userId: number) {
+export async function getScoreHistory(userId: string) {
   const transactions = await getDb()
     .orm.public.ScoreTransaction.where({ userId })
     .include("acronym", (acronym) => acronym.select("code"))

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 type AcronymCardProps = {
   code: string
-  meanings: { id: number; text: string; addedBy: string; addedAt: Date }[]
+  meanings: { id: string; text: string; addedBy: string; addedAt: Date }[]
   /** Meaning text to emphasise, e.g. the one just submitted. */
   highlight?: string
 }

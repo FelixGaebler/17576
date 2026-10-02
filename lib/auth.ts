@@ -25,7 +25,8 @@ export const getCurrentUser = cache(async () => {
   if (!isOidcEnabled()) return getDevelopmentUser()
 
   const session = await unseal<Session>((await cookies()).get(SESSION_COOKIE)?.value)
-  const user = session && (await users().where({ id: session.userId }).first())
+  // Cookies issued before the switch to UUIDs carry a numeric id; treat them as logged out.
+  const user = typeof session?.userId === "string" && (await users().where({ id: session.userId }).first())
   if (!user) redirect("/auth/login")
   return user
 })

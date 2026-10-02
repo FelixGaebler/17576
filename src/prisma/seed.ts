@@ -21,7 +21,7 @@ type UserKey = keyof typeof users
 // [user, acronym, meaning, days ago]. Replayed oldest first through the real
 // scoring logic, so scores and transaction types are always consistent.
 const submissions: [UserKey, string, string, number][] = [
-  ['max', 'POS', 'Point of Sale', 29],
+  ['max', 'POS', 'Point Of Sale', 29],
   ['anna', 'API', 'Application Programming Interface', 28],
   ['anna', 'KPI', 'Key Performance Indicator', 28],
   ['lena', 'UAT', 'User Acceptance Testing', 28],
@@ -35,7 +35,7 @@ const submissions: [UserKey, string, string, number][] = [
   ['felix', 'KPI', 'Key Performance Indicator', 25],
   ['paul', 'WMS', 'Warehouse Management System', 25],
   ['anna', 'SLA', 'Service Level Agreement', 24],
-  ['lena', 'DOD', 'Definition of Done', 24],
+  ['lena', 'DOD', 'Definition Of Done', 24],
   ['mia', 'APM', 'Application Performance Monitoring', 24],
   ['max', 'DNS', 'Domain Name System', 23],
   ['jonas', 'BCP', 'Business Continuity Plan', 23],
@@ -44,7 +44,7 @@ const submissions: [UserKey, string, string, number][] = [
   ['leon', 'QAS', 'Quality Assurance System', 22],
   ['felix', 'DMS', 'Document Management System', 21],
   ['lena', 'PRD', 'Product Requirements Document', 21],
-  ['paul', 'BOM', 'Bill of Materials', 21],
+  ['paul', 'BOM', 'Bill Of Materials', 21],
   ['anna', 'MVP', 'Minimum Viable Product', 20],
   ['max', 'CDN', 'Content Delivery Network', 20],
   ['mia', 'CAB', 'Change Advisory Board', 20],
@@ -55,32 +55,32 @@ const submissions: [UserKey, string, string, number][] = [
   ['lena', 'URL', 'Uniform Resource Locator', 18],
   ['sophie', 'LMS', 'Learning Management System', 18],
   ['max', 'ABC', 'Activity Based Costing', 17],
-  ['paul', 'JIT', 'Just in Time', 17],
+  ['paul', 'JIT', 'Just In Time', 17],
   ['felix', 'EMP', 'Employee Master Profile', 16],
   ['jonas', 'RCA', 'Root Cause Analysis', 16],
-  ['leon', 'RFP', 'Request for Proposal', 16],
-  ['anna', 'RFC', 'Request for Comments', 15],
+  ['leon', 'RFP', 'Request For Proposal', 16],
+  ['anna', 'RFC', 'Request For Comments', 15],
   ['lena', 'CMS', 'Content Management System', 15],
   ['mia', 'PMO', 'Project Management Office', 15],
   ['max', 'MVP', 'Most Valuable Player', 14],
   ['sophie', 'NDA', 'Non Disclosure Agreement', 14],
-  ['felix', 'WIP', 'Work in Progress', 13],
+  ['felix', 'WIP', 'Work In Progress', 13],
   ['jonas', 'ITS', 'Internal Ticket System', 13],
   ['paul', 'OTD', 'On Time Delivery', 13],
   ['anna', 'OPS', 'Order Processing Service', 12],
   ['lena', 'SEO', 'Search Engine Optimization', 12],
   ['leon', 'IPO', 'Initial Public Offering', 12],
   ['max', 'ETL', 'Extract Transform Load', 11],
-  ['sophie', 'EOD', 'End of Day', 11],
+  ['sophie', 'EOD', 'End Of Day', 11],
   ['mia', 'TBD', 'To Be Decided', 11],
   ['felix', 'API', 'Application Programming Interface', 10],
   ['jonas', 'EMP', 'Enterprise Messaging Platform', 10],
-  ['clara', 'SEO', 'search engine optimization', 10],
+  ['clara', 'SEO', 'Search  Engine  Optimization', 10],
   ['anna', 'PIM', 'Product Information Management', 9],
   ['lena', 'CSR', 'Customer Service Representative', 9],
   ['paul', 'OPS', 'Operations Planning System', 9],
   ['felix', 'FAQ', 'Frequently Asked Questions', 8],
-  ['sophie', 'ROI', 'Return on Investment', 8],
+  ['sophie', 'ROI', 'Return On Investment', 8],
   ['leon', 'API', 'Application Programming Interface', 8],
   ['max', 'CRS', 'Central Reporting Service', 7],
   ['jonas', 'POS', 'Purchase Order System', 7],
@@ -89,22 +89,23 @@ const submissions: [UserKey, string, string, number][] = [
   ['lena', 'KPI', 'Key Performance Indicator', 6],
   ['paul', 'ERP', 'Enterprise Resource Planning', 6],
   ['felix', 'PTO', 'Paid Time Off', 5],
-  ['sophie', 'DOD', 'Department of Defense', 5],
+  ['sophie', 'DOD', 'Department Of Defense', 5],
   ['leon', 'VPN', 'Virtual Private Network', 5],
   ['max', 'SLA', 'Service Level Agreement', 4],
   ['jonas', 'SSO', 'Single Sign On', 4],
   ['mia', 'ITS', 'Intelligent Transport System', 4],
   ['anna', 'ZDD', 'Zero Downtime Deployment', 3],
-  ['felix', 'POS', 'Point of Sale', 3],
-  ['paul', 'TTM', 'Time to Market', 3],
+  ['felix', 'POS', 'Point Of Sale', 3],
+  ['paul', 'TTM', 'Time To Market', 3],
   ['clara', 'BCP', 'Business Continuity Plan', 3],
   ['anna', 'NPS', 'Net Promoter Score', 2],
-  ['lena', 'GTM', 'Go to Market', 2],
+  ['lena', 'GTM', 'Go To Market', 2],
   ['sophie', 'CRM', 'Customer Relationship Management', 2],
   ['felix', 'AOF', 'Apple Often Fails', 1],
-  ['jonas', 'RFC', 'Request for Change', 1],
+  ['jonas', 'RFC', 'Request For Change', 1],
   ['mia', 'PIM', 'Personal Information Manager', 1],
   ['felix', 'ABC', 'Automated Booking Component', 0],
+  ['max', 'AOF', 'Allocation and Offer Force', 0],
 ]
 
 function submissionTime(daysAgo: number, index: number) {
@@ -117,16 +118,16 @@ function submissionTime(daysAgo: number, index: number) {
 }
 
 async function resetGlossary() {
-  await db.orm.public.ScoreTransaction.where((t) => t.id.gt(0)).deleteAndCount()
-  await db.orm.public.Meaning.where((m) => m.id.gt(0)).deleteAndCount()
-  await db.orm.public.Acronym.where((a) => a.id.gt(0)).deleteAndCount()
-  await db.orm.public.User.where((u) => u.id.gt(0)).deleteAndCount()
+  await db.orm.public.ScoreTransaction.where((t) => t.id.isNotNull()).deleteAndCount()
+  await db.orm.public.Meaning.where((m) => m.id.isNotNull()).deleteAndCount()
+  await db.orm.public.Acronym.where((a) => a.id.isNotNull()).deleteAndCount()
+  await db.orm.public.User.where((u) => u.id.isNotNull()).deleteAndCount()
 }
 
 async function main() {
   await resetGlossary()
 
-  const userIds = {} as Record<UserKey, number>
+  const userIds = {} as Record<UserKey, string>
   for (const [key, user] of Object.entries(users) as [UserKey, (typeof users)[UserKey]][]) {
     userIds[key] = (await db.orm.public.User.create(user)).id
   }
